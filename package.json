@@ -5,10 +5,13 @@
   "packageManager": "pnpm@10.33.2",
   "scripts": {
     "build": "turbo run build --filter=!@kdb-dashboard-library/q-gateway",
+    "build:docs": "pnpm --filter @kdb-dashboard-library/docs-site build",
     "dev": "turbo run dev --parallel --filter=@kdb-dashboard-library/dashboard --filter=@kdb-dashboard-library/q-gateway",
     "dev:dashboard": "pnpm --filter @kdb-dashboard-library/dashboard dev",
+    "dev:docs": "pnpm --filter @kdb-dashboard-library/docs-site dev",
     "dev:gateway": "./scripts/dev-gateway.sh",
     "lint": "turbo run lint --filter=!@kdb-dashboard-library/q-gateway",
+    "preview:docs": "pnpm --filter @kdb-dashboard-library/docs-site preview",
     "q:doctor": "./scripts/doctor-q.sh",
     "test": "turbo run test --filter=!@kdb-dashboard-library/q-gateway",
     "test:q": "./scripts/test-gateway.sh",

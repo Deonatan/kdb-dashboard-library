@@ -13,6 +13,7 @@ The repo is built around a simple idea:
 
 The monorepo is split into runnable apps plus reusable frontend packages:
 
+- `apps/docs-site`: deployable static documentation site for features, utilities, and usage
 - `apps/q-gateway`: pure `q` websocket service, routing, reusable helpers, sample endpoints
 - `apps/dashboard`: Vite + React dashboard app that talks to the gateway over WebSocket
 - `packages/protocol`: shared TypeScript request/response types and demo fixtures
@@ -44,6 +45,7 @@ flowchart LR
 ```text
 kdb-dashboard-library/
 ├── apps/
+│   ├── docs-site/
 │   ├── dashboard/
 │   └── q-gateway/
 ├── packages/
@@ -99,6 +101,18 @@ By default the gateway listens on `ws://localhost:5050`.
 
 ```bash
 pnpm dev:dashboard
+```
+
+### 4. Start the static docs site
+
+```bash
+pnpm dev:docs
+```
+
+To build deployable static documentation assets:
+
+```bash
+pnpm build:docs
 ```
 
 If you want a different gateway URL, copy [`apps/dashboard/.env.example`](apps/dashboard/.env.example) to `apps/dashboard/.env` and override `VITE_KDB_WS_URL`.
@@ -228,6 +242,7 @@ See [docs/use-cases.md](docs/use-cases.md) for the flagship workflow plus more s
 - [Adding Backend Endpoints](docs/backend/adding-endpoints.md)
 - [Dashboard Notes](docs/frontend/README.md)
 - [Getting Started](docs/getting-started.md)
+- [Static Docs App](apps/docs-site/README.md)
 - [Use Cases](docs/use-cases.md)
 - [Endpoint Extension Pattern](docs/endpoint-pattern.md)
 - [Request / Response Contracts](docs/request-response-contracts.md)

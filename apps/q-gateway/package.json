@@ -1,0 +1,12 @@
+{
+  "name": "@kdb-dashboard-library/q-gateway",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "echo \"No build step for q-gateway\"",
+    "dev": "../../scripts/dev-gateway.sh",
+    "lint": "echo \"No lint step for q-gateway\"",
+    "test": "../../scripts/test-gateway.sh",
+    "typecheck": "echo \"No static typecheck step for q-gateway\""
+  }
+}

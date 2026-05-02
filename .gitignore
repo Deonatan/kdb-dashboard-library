@@ -1,0 +1,14 @@
+.DS_Store
+.turbo
+coverage
+dist
+node_modules
+pnpm-debug.log*
+
+apps/dashboard/.vite
+apps/dashboard/dist
+apps/dashboard/node_modules
+
+packages/*/dist
+
+*.log

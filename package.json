@@ -1,0 +1,25 @@
+{
+  "name": "kdb-dashboard-library",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.33.2",
+  "scripts": {
+    "build": "turbo run build --filter=!@kdb-dashboard-library/q-gateway",
+    "dev": "turbo run dev --parallel --filter=@kdb-dashboard-library/dashboard --filter=@kdb-dashboard-library/q-gateway",
+    "dev:dashboard": "pnpm --filter @kdb-dashboard-library/dashboard dev",
+    "dev:gateway": "./scripts/dev-gateway.sh",
+    "lint": "turbo run lint --filter=!@kdb-dashboard-library/q-gateway",
+    "test": "turbo run test --filter=!@kdb-dashboard-library/q-gateway",
+    "test:q": "./scripts/test-gateway.sh",
+    "typecheck": "turbo run typecheck --filter=!@kdb-dashboard-library/q-gateway",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "tsup": "^8.5.0",
+    "turbo": "^2.6.0",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.4"
+  }
+}

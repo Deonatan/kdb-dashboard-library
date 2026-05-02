@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmitOnError": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2022",
+    "paths": {
+      "@kdb-dashboard-library/finance-ui": ["packages/finance-ui/src/index.ts"],
+      "@kdb-dashboard-library/protocol": ["packages/protocol/src/index.ts"],
+      "@kdb-dashboard-library/react-client": ["packages/react-client/src/index.ts"]
+    }
+  }
+}

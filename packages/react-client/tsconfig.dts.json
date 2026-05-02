@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "outDir": "dist"
+  },
+  "files": [
+    "src/client.ts",
+    "src/hooks.ts",
+    "src/index.ts",
+    "src/provider.tsx"
+  ],
+  "include": []
+}

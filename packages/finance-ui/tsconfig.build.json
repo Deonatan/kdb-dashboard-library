@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {},
+    "rootDir": "./src"
+  },
+  "files": ["src/components.tsx", "src/index.ts"]
+}

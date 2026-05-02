@@ -12,3 +12,4 @@ apps/dashboard/node_modules
 packages/*/dist
 
 *.log
+*.tsbuildinfo

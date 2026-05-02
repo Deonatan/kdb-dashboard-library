@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a problem with backend, frontend, contracts, or docs.
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+      placeholder: A clear description of the issue.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - backend
+        - frontend
+        - websocket contract
+        - documentation
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, payloads, or navigation steps.
+      placeholder: |
+        1. Start the backend
+        2. Open the frontend
+        3. Send this request
+        4. Observe this behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: payloads
+    attributes:
+      label: Relevant payloads or logs
+      description: Paste sample JSON requests, responses, or q logs if available.

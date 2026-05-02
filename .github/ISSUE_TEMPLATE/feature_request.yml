@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest an improvement for the starter kit.
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What workflow, integration, or dashboard need is not well supported today?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - backend
+        - frontend
+        - websocket contract
+        - developer experience
+        - documentation
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the endpoint, UI capability, or workflow you would like to add.
+    validations:
+      required: true
+  - type: textarea
+    id: finance_context
+    attributes:
+      label: Finance context
+      description: If relevant, describe the trading, analytics, or market-data use case behind the request.

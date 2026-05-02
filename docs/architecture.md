@@ -172,5 +172,6 @@ As the implementation matures, expect to add:
 - [Backend Architecture](backend/architecture.md)
 - [Adding Backend Endpoints](backend/adding-endpoints.md)
 - [Getting Started](getting-started.md)
+- [Use Cases](use-cases.md)
 - [Endpoint Pattern](endpoint-pattern.md)
 - [Request / Response Contracts](request-response-contracts.md)

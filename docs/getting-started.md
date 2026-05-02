@@ -202,5 +202,6 @@ When debugging, start with:
 
 - [Architecture](architecture.md)
 - [Backend Architecture](backend/architecture.md)
+- [Use Cases](use-cases.md)
 - [Request / Response Contracts](request-response-contracts.md)
 - [Roadmap](roadmap.md)

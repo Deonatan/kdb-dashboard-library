@@ -204,6 +204,23 @@ The default dashboard theme leans into:
 
 It is inspired by tools finance users already feel comfortable with, while staying fully editable in normal React/CSS.
 
+## Best First Use Case
+
+The best first deployment for this starter is an **intraday trading desk risk cockpit**:
+
+- top-line KPIs for PnL, gross, net, VaR, and utilization
+- ranked movers and contributors
+- time-series panels for intraday drift
+- one or two drill-down endpoints for desk-specific workflows
+
+That use case fits the repo especially well because it maps directly to:
+
+- `q` for shaping exposures, rankings, and time series
+- WebSocket requests for fast dashboard refreshes
+- the included finance-oriented React component set
+
+See [docs/use-cases.md](docs/use-cases.md) for the flagship workflow plus more sample patterns.
+
 ## Documentation Map
 
 - [Architecture](docs/architecture.md)
@@ -211,6 +228,7 @@ It is inspired by tools finance users already feel comfortable with, while stayi
 - [Adding Backend Endpoints](docs/backend/adding-endpoints.md)
 - [Dashboard Notes](docs/frontend/README.md)
 - [Getting Started](docs/getting-started.md)
+- [Use Cases](docs/use-cases.md)
 - [Endpoint Extension Pattern](docs/endpoint-pattern.md)
 - [Request / Response Contracts](docs/request-response-contracts.md)
 - [Roadmap](docs/roadmap.md)

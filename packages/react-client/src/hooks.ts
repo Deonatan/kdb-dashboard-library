@@ -87,7 +87,9 @@ export function useKdbLiveQuery<
     }
 
     void refresh(params)
-  }, [func, options.enabled, options.immediate, params, refresh, status])
+    // Effect Events already capture the latest request logic.
+    // Adding `refresh` here would cause the query to retrigger on every render.
+  }, [func, options.enabled, options.immediate, params, status])
 
   return {
     ...state,

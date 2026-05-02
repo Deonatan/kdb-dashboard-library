@@ -212,6 +212,7 @@ As the implementation matures, expect to add:
 
 ## Related Docs
 
+- [Backend Architecture](backend/architecture.md)
 - [Getting Started](getting-started.md)
 - [Endpoint Pattern](endpoint-pattern.md)
 - [Request / Response Contracts](request-response-contracts.md)

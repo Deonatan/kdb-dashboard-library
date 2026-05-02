@@ -91,6 +91,7 @@ Priority docs:
 
 - `README.md`
 - `docs/architecture.md`
+- `docs/backend/architecture.md`
 - `docs/getting-started.md`
 - `docs/endpoint-pattern.md`
 - `docs/request-response-contracts.md`

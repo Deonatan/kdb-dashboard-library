@@ -206,6 +206,7 @@ See [docs/getting-started.md](docs/getting-started.md) for the intended setup fl
 ## Documentation Map
 
 - [Architecture](docs/architecture.md)
+- [Backend Architecture](docs/backend/architecture.md)
 - [Getting Started](docs/getting-started.md)
 - [Endpoint Extension Pattern](docs/endpoint-pattern.md)
 - [Request / Response Contracts](docs/request-response-contracts.md)

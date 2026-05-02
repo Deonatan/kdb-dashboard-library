@@ -1,23 +1,27 @@
-# Frontend starter
+# Dashboard app
 
-This package lives in `frontend/` and is designed to plug into a larger monorepo without requiring root workspace files. It provides a React + TypeScript starter for a kdb websocket backend, plus a finance-focused dashboard shell and reusable chart components.
+The runnable dashboard lives in `apps/dashboard/` and sits on top of the shared workspace packages:
+
+- `packages/react-client` for WebSocket connection state and request hooks
+- `packages/protocol` for shared envelope and snapshot types
+- `packages/finance-ui` for the terminal-inspired theme and finance visuals
 
 ## Run locally
 
 ```bash
-cd frontend
+pnpm install
+cd apps/dashboard
 cp .env.example .env
-npm install
-npm run dev
+pnpm dev
 ```
 
 Default websocket target:
 
 ```env
-VITE_KDB_WS_URL=ws://localhost:5000
+VITE_KDB_WS_URL=ws://localhost:5050
 ```
 
-If the backend is not running yet, set `VITE_KDB_MOCK_MODE=true` to keep the UI usable with seeded market data.
+If the backend is not running yet, the UI still renders from the demo snapshot exported by `packages/protocol`.
 
 ## Expected websocket contract
 
@@ -25,11 +29,10 @@ Frontend requests:
 
 ```json
 {
-  "type": "request",
-  "requestId": "uuid",
-  "func": "dashboard.load",
-  "args": {
-    "symbol": "AAPL"
+  "id": "uuid",
+  "func": "dashboard.snapshot",
+  "params": {
+    "book": "macro"
   }
 }
 ```
@@ -38,39 +41,31 @@ Backend responses:
 
 ```json
 {
-  "type": "response",
-  "requestId": "uuid",
+  "id": "uuid",
   "ok": true,
   "data": {
-    "snapshot": {},
-    "intraday": [],
-    "candles": [],
-    "exposures": [],
-    "orderBook": [],
-    "trades": []
-  }
-}
-```
-
-Optional backend push events:
-
-```json
-{
-  "type": "event",
-  "topic": "orders.updated",
-  "data": {}
+    "overview": [],
+    "allocation": [],
+    "priceSeries": [],
+    "volumeSeries": [],
+    "movers": []
+  },
+  "server": "kdb-dashboard-library",
+  "ts": "2026.05.03D01:58:00.000000000"
 }
 ```
 
 ## Starter surface
 
-- `src/lib/websocket/KdbSocketClient.ts`: reconnecting websocket client with request correlation and timeouts.
-- `src/context/KdbProvider.tsx`: React context that exposes connection state plus `sendRequest`.
-- `src/api/dashboard.ts`: typed frontend wrappers for kdb function names such as `dashboard.load`.
-- `src/features/dashboard/Dashboard.tsx`: Bloomberg-inspired starter dashboard with reusable chart blocks.
+- `src/App.tsx`: composes the starter dashboard and debug workbench
+- `src/main.tsx`: wires `KdbProvider` to the app
+- `packages/react-client`: reconnecting websocket client with request correlation
+- `packages/finance-ui`: KPI cards, charts, table, theme
+- `packages/protocol`: request and response types
 
 ## Adding frontend features
 
-1. Add a new backend function name in `src/api/`.
-2. Call it through `sendRequest` or `useKdbRequest`.
-3. Render the result with a new feature component under `src/features/` or a reusable visualization under `src/components/charts/`.
+1. Add a new backend function name in `apps/q-gateway/src/endpoints/`.
+2. Add any shared types to `packages/protocol`.
+3. Call it through `useKdbConnection` or `useKdbLiveQuery`.
+4. Render the result with a new dashboard panel or extract a reusable visualization into `packages/finance-ui`.

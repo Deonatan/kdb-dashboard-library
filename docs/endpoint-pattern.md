@@ -8,7 +8,7 @@ The main goal is to make adding a new endpoint feel routine rather than architec
 
 A new user-facing function should usually require only:
 
-1. one new file under `backend/endpoints/`
+1. one new file under `apps/q-gateway/src/endpoints/`
 2. one registry entry
 3. optional shared utility updates if the new data shape needs reusable parsing or serialization logic
 
@@ -17,19 +17,12 @@ The WebSocket transport layer should not need to change for each new endpoint.
 ## Recommended Backend Shape
 
 ```text
-backend/
-├── router/
-│   ├── websocket.q
-│   ├── dispatcher.q
-│   └── registry.q
-├── endpoints/
-│   ├── health_check.q
-│   ├── top_movers.q
-│   └── pnl_series.q
-└── utils/
-    ├── parse.q
-    ├── response.q
-    └── tables.q
+apps/q-gateway/
+├── src/
+│   ├── core/
+│   ├── endpoints/
+│   └── utils/
+└── tests/
 ```
 
 ## Dispatch Model
@@ -45,13 +38,13 @@ The dispatcher should:
 Illustrative direction:
 
 ```q
-/ backend/router/dispatcher.q
-.router.dispatch:{
-  req:.utils.parse.request x;
-  func:req`func;
-  handler:.router.getHandler func;
-  data:handler req`params;
-  .utils.response.ok[req`requestId;func;data]
+/ apps/q-gateway/src/core/router.q
+.kdb.router.route:{
+  payload:x;
+  funcText:.kdb.router.requestFunc payload;
+  fn:.kdb.registry.get `$ funcText;
+  data:fn .kdb.router.requestParams payload;
+  .kdb.response.ok[.kdb.router.requestId payload; funcText; data]
  }
 ```
 
@@ -59,19 +52,7 @@ Illustrative direction:
 
 Prefer an explicit registry over evaluating arbitrary strings.
 
-```q
-/ backend/router/registry.q
-.router.handlers:`healthCheck`getTopMovers`getPnLSeries!
-  (.api.healthCheck;.api.getTopMovers;.api.getPnLSeries);
-
-.router.getHandler:{
-  func:x;
-  if[not func in key .router.handlers;
-    '"Unknown function: ", string func
-  ];
-  .router.handlers func
- }
-```
+Endpoint files register themselves through `.kdb.registry.register`, which keeps startup simple and the callable surface explicit.
 
 Benefits:
 
@@ -82,7 +63,7 @@ Benefits:
 
 ## Handler Conventions
 
-Each endpoint file should expose one main handler in the `.api` namespace.
+Each endpoint file should expose one main handler.
 
 Recommended conventions:
 
@@ -94,32 +75,32 @@ Recommended conventions:
 Example:
 
 ```q
-/ backend/endpoints/top_movers.q
-.api.getTopMovers:{
-  params:x;
-  dt:.utils.parse.dateOrDefault[params;`date;.z.D];
-  limit:.utils.parse.longOrDefault[params;`limit;10];
-  universe:.utils.parse.symbolOrDefault[params;`universe;`ALL];
-
-  rows:select sym, lastPx, movePct, volume
-    from .data.marketSnapshot
-    where date=dt, universe=universe;
-
-  `rows`asOf!(limit#rows;.z.P)
- }
+/ apps/q-gateway/src/endpoints/top_movers.q
+.kdb.registry.register[
+  `top.movers;
+  {[params]
+    limit:.kdb.util.getOr[params; `limit; 10];
+    `rows`asOf!(
+      limit#([] sym:`AAPL`MSFT`NVDA; lastPx:194.22 421.14 957.61; movePct:0.74 -0.14 0.30; volume:12.3 9.8 15.6);
+      string .z.p
+    )
+  };
+  `name`description`group!(
+    "top.movers";
+    "Illustrative ranked table endpoint.";
+    "dashboard"
+  )
+];
 ```
 
 ## Shared Utility Opportunities
 
 Good utility candidates:
 
-- `dateOrDefault`
-- `timestampOrDefault`
-- `symbolOrDefault`
-- `longOrDefault`
-- `boolOrDefault`
-- `tableToRows`
-- `ok` and `error` response builders
+- safe dictionary field reads
+- symbol coercion
+- request parsing helpers
+- `ok` and `fail` response builders
 
 Utilities are especially helpful in `q` because they reduce repetitive guard code and keep endpoint handlers short.
 
@@ -127,19 +108,17 @@ Utilities are especially helpful in `q` because they reduce repetitive guard cod
 
 For each backend endpoint, the frontend should usually have:
 
-1. a small service wrapper
-2. optional hook or feature-level request helper
+1. a small service wrapper or hook
+2. optional shared types in `packages/protocol`
 3. a presentational component that accepts already-shaped data
 
 Example shape:
 
 ```ts
-// frontend/src/services/kdbClient.ts
-client.call("getTopMovers", {
-  date: "2026-05-03",
+// apps/dashboard/src/App.tsx
+await request("top.movers", {
   limit: 10,
-  universe: "EQUITIES_US",
-});
+})
 ```
 
 ## Endpoint Categories To Expect
@@ -159,12 +138,10 @@ Useful categories for finance dashboards:
 
 ```json
 {
-  "requestId": "req-top-movers-01",
-  "func": "getTopMovers",
+  "id": "req-top-movers-01",
+  "func": "top.movers",
   "params": {
-    "date": "2026-05-03",
-    "limit": 5,
-    "universe": "EQUITIES_US"
+    "limit": 5
   }
 }
 ```
@@ -173,17 +150,16 @@ Useful categories for finance dashboards:
 
 ```json
 {
-  "requestId": "req-top-movers-01",
-  "status": "ok",
-  "func": "getTopMovers",
+  "id": "req-top-movers-01",
+  "ok": true,
+  "func": "top.movers",
   "data": {
     "rows": [
       { "sym": "NVDA", "lastPx": 1093.4, "movePct": 2.7, "volume": 51230000 },
       { "sym": "AMD", "lastPx": 176.8, "movePct": 1.9, "volume": 32040000 }
     ],
-    "asOf": "2026-05-03T13:30:00.000Z"
-  },
-  "error": null
+    "asOf": "2026.05.03D13:30:00.000000000"
+  }
 }
 ```
 

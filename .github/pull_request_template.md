@@ -4,8 +4,9 @@ Describe the change and the user or developer problem it solves.
 
 ## Scope
 
-- Backend:
-- Frontend:
+- q-gateway:
+- dashboard:
+- shared packages:
 - Docs:
 
 ## Validation

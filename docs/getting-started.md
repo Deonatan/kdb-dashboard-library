@@ -1,18 +1,18 @@
 # Getting Started
 
-This guide describes the intended setup flow for `kdb-dashboard-library` once the backend and frontend implementations are scaffolded.
+This guide describes the setup flow for the monorepo version of `kdb-dashboard-library`.
 
 Because the project is meant to stay friendly to `kdb` users, the workflow is designed around a simple split:
 
-- `backend/` runs the pure `q` WebSocket server
-- `frontend/` runs the React dashboard client
+- `apps/q-gateway/` runs the pure `q` WebSocket server
+- `apps/dashboard/` runs the React dashboard client
 
 ## Prerequisites
 
 Expected local tooling:
 
 - `q` / `kdb+`
-- `node` and `npm` or `pnpm`
+- `node` and `pnpm`
 - a browser for local dashboard testing
 
 Optional but recommended:
@@ -24,66 +24,65 @@ Optional but recommended:
 
 ```text
 kdb-dashboard-library/
-├── backend/
-├── frontend/
+├── apps/
+│   ├── q-gateway/
+│   └── dashboard/
+├── packages/
 ├── docs/
 └── README.md
 ```
 
 ## Suggested First Boot Flow
 
-### Backend
-
-The backend should eventually expose:
-
-- a startup script such as `backend/main.q`
-- configuration for host, port, and environment
-- a WebSocket handler that parses JSON and routes by function name
-
-Typical local startup pattern:
+### 1. Install dependencies
 
 ```bash
-cd backend
-q main.q -p 5050
+pnpm install
 ```
 
-### Frontend
+### 2. Start the q gateway
 
-The frontend should eventually provide:
-
-- a React app
-- a shared WebSocket client service
-- a configurable backend WebSocket URL
-
-Typical local startup pattern:
+The gateway startup script expects `q` on your `PATH`.
 
 ```bash
-cd frontend
-npm install
-npm run dev
+pnpm dev:gateway
+```
+
+This runs:
+
+- `q apps/q-gateway/src/main.q -port 5050`
+
+The gateway will listen on `ws://localhost:5050`.
+
+### 3. Start the dashboard
+
+```bash
+pnpm dev:dashboard
 ```
 
 ## Environment Expectations
 
-The frontend should connect using a configurable WebSocket URL, for example:
+The dashboard connects using `VITE_KDB_WS_URL`.
 
 ```text
 ws://localhost:5050
 ```
 
+Copy [`apps/dashboard/.env.example`](../apps/dashboard/.env.example) to `apps/dashboard/.env` if you want to override the default.
+
 Suggested environment variables:
 
-- `KDB_WS_URL` for the frontend WebSocket target
-- `KDB_APP_ENV` for backend runtime mode
+- `VITE_KDB_WS_URL` for the frontend WebSocket target
+- `Q_PORT` if you want to change the default gateway port in the shell wrapper
 
 ## First End-To-End Smoke Test
 
-Once both sides are scaffolded, a minimal test should be:
+Once both sides are running, a minimal test should be:
 
 1. Start the backend.
 2. Start the frontend.
 3. Open the dashboard.
-4. Send a `healthCheck` request from the frontend.
+4. Let the dashboard send `health.check` automatically after the socket opens.
 5. Confirm a JSON success response comes back.
 6. Render a visible connected state in the UI.
 
@@ -91,8 +90,8 @@ Recommended first request:
 
 ```json
 {
-  "requestId": "smoke-001",
-  "func": "healthCheck",
+  "id": "smoke-001",
+  "func": "health.check",
   "params": {}
 }
 ```
@@ -101,15 +100,16 @@ Recommended first response:
 
 ```json
 {
-  "requestId": "smoke-001",
-  "status": "ok",
-  "func": "healthCheck",
+  "id": "smoke-001",
+  "ok": true,
+  "func": "health.check",
   "data": {
-    "connected": true,
+    "status": "ok",
     "service": "kdb-dashboard-library",
-    "timestamp": "2026-05-03T00:00:00.000Z"
+    "timestamp": "2026.05.03D00:00:00.000000000"
   },
-  "error": null
+  "server": "kdb-dashboard-library",
+  "ts": "2026.05.03D00:00:00.000000000"
 }
 ```
 
@@ -130,21 +130,21 @@ This is useful for isolating backend contract issues before debugging React stat
 
 The expected happy path should be:
 
-1. Add a new handler file under `backend/endpoints/`.
-2. Register it in the backend function registry.
-3. Add a frontend request wrapper in `frontend/src/services/` or `frontend/src/features/`.
-4. Render the data in a dashboard component.
+1. Add a new handler file under `apps/q-gateway/src/endpoints/`.
+2. Register it in the gateway registry.
+3. Add or update a request wrapper in `packages/react-client/` or `apps/dashboard/`.
+4. Render the data in the dashboard or in a package consumer.
 
-See [docs/endpoint-pattern.md](endpoint-pattern.md) for the recommended structure.
+See [docs/backend/adding-endpoints.md](backend/adding-endpoints.md) and [docs/endpoint-pattern.md](endpoint-pattern.md) for the recommended structure.
 
 ## Suggested First Reference Endpoints
 
 For early scaffolding, these endpoints give good coverage:
 
-- `healthCheck`
-- `getTopMovers`
-- `getTrades`
-- `getPnLSeries`
+- `health.check`
+- `debug.echo`
+- `dashboard.snapshot`
+- one custom desk-specific endpoint of your own
 
 They exercise different shapes:
 
@@ -183,5 +183,6 @@ When debugging, start with:
 ## Next Reading
 
 - [Architecture](architecture.md)
+- [Backend Architecture](backend/architecture.md)
 - [Request / Response Contracts](request-response-contracts.md)
 - [Roadmap](roadmap.md)

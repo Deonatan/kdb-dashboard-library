@@ -17,8 +17,9 @@ body:
     attributes:
       label: Area
       options:
-        - backend
-        - frontend
+        - q-gateway
+        - dashboard
+        - shared packages
         - websocket contract
         - documentation
     validations:

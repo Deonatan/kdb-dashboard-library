@@ -1,6 +1,6 @@
 # Architecture
 
-This document describes the intended architecture for `kdb-dashboard-library`: a pure `q` backend connected to a React dashboard through a stable JSON-over-WebSocket contract.
+This document describes the architecture for `kdb-dashboard-library`: a pure `q` gateway connected to a React dashboard through a stable JSON-over-WebSocket contract.
 
 ## Design Goals
 
@@ -9,26 +9,25 @@ This document describes the intended architecture for `kdb-dashboard-library`: a
 - Make endpoint extension low-friction
 - Normalize request and response shapes
 - Support dashboard use cases common in finance: blotters, rankings, time series, KPIs, and drill-down panels
+- Separate reusable frontend primitives from the sample app so the repo can grow into a library
 
 ## High-Level Topology
 
 ```mermaid
 flowchart TD
-    A["Frontend React App"] --> B["WebSocket Client Service"]
-    B --> C["Shared Request Hook / Store"]
-    C --> D["Dashboard Components"]
+    A["apps/dashboard"] --> B["packages/react-client"]
+    B --> C["packages/protocol"]
+    A --> D["packages/finance-ui"]
 
-    B <--> E["q WebSocket Gateway"]
+    B <--> E["apps/q-gateway"]
     E --> F["JSON Parser / Validator"]
     F --> G["Function Registry"]
-    G --> H["Endpoint Handlers"]
+    G --> H["src/endpoints/*.q"]
     H --> I["Shared q Utilities"]
     H --> J["kdb Data / Analytics"]
 ```
 
 ## Backend Responsibilities
-
-The backend should stay deliberately layered.
 
 ### 1. WebSocket Gateway
 
@@ -37,7 +36,7 @@ Primary responsibilities:
 - receive raw payloads from the frontend
 - use q connection handles and the normal `.z.ws` / `neg` reply flow
 - parse JSON into q data structures
-- extract `requestId`, `func`, `params`, and optional `meta`
+- extract `id`, `func`, and `params`
 - dispatch work through a registry rather than dynamic `value` on arbitrary input
 - wrap handler results into a normalized response envelope
 - send JSON back over the same socket
@@ -48,18 +47,7 @@ Keep the gateway small. It should focus on transport, not business logic.
 
 The registry maps a public API function name to an actual q handler.
 
-Example direction:
-
-```q
-.router.handlers:`healthCheck`getTrades`getTopMovers`getPnLSeries!
-  (.api.healthCheck;.api.getTrades;.api.getTopMovers;.api.getPnLSeries)
-```
-
-This is preferable to evaluating unchecked strings because it makes:
-
-- supported endpoints explicit
-- error handling cleaner
-- future auth and permission checks easier
+Endpoint files self-register through `.kdb.registry.register`, which keeps the startup path simple and makes supported functions explicit.
 
 ### 3. Endpoint Handlers
 
@@ -76,21 +64,17 @@ They should not need to know how the socket works.
 
 Shared utility code should handle repetitive work such as:
 
-- JSON-safe data shaping
 - `.j.k` and `.j.j` wrapper behavior where shared parsing helpers make sense
 - symbol / date / timestamp coercion
 - defaulting nullable parameters
-- table-to-dictionary conversion
 - response envelope construction
 - standardized error objects
 
-This makes new endpoints faster to write and easier to keep consistent.
-
 ## Frontend Responsibilities
 
-### 1. WebSocket Client
+### 1. Shared React Client
 
-The frontend should have one shared client layer responsible for:
+The reusable client layer is responsible for:
 
 - opening the connection
 - reconnecting when appropriate
@@ -106,43 +90,39 @@ Suggested responsibilities:
 
 - pending / success / error state
 - caching or last-response state where useful
-- request helpers such as `callKdb("getTopMovers", params)`
+- request helpers such as `request("dashboard.snapshot", params)`
 
-### 3. Dashboard Components
+### 3. Finance UI Package
 
-Components should focus on rendering rather than transport.
+The reusable UI package currently provides:
 
-Typical finance-oriented primitives:
+- shell and panel primitives
+- KPI card layouts
+- price, volume, allocation, and movers visualizations
+- Bloomberg-inspired theme tokens and typography
 
-- KPI tiles
-- blotter / table grids
-- ranked lists
-- intraday or historical line charts
-- grouped bar charts
-- heatmaps
+### 4. Dashboard App
 
-### 4. Theme System
+The dashboard app demonstrates how the shared transport and UI layers fit together.
 
-The frontend visual system should default to a finance-friendly feel:
+The default visual direction should feel finance-friendly:
 
 - charcoal or near-black background surfaces
 - amber, green, red, and cyan highlights
 - compact spacing
 - highly legible monospaced or terminal-adjacent typography for dense numeric views
 
-The result should feel familiar to users coming from terminal-style workflows without copying any proprietary product exactly.
-
 ## Message Lifecycle
 
 ```mermaid
 sequenceDiagram
-    participant UI as React UI
-    participant WS as WebSocket Client
+    participant UI as Dashboard App
+    participant WS as react-client
     participant GW as q Gateway
     participant RG as Registry
     participant EP as Endpoint
 
-    UI->>WS: send({requestId, func, params})
+    UI->>WS: send({id, func, params})
     WS->>GW: JSON payload
     GW->>GW: parse + validate
     GW->>RG: resolve func
@@ -152,51 +132,29 @@ sequenceDiagram
     WS-->>UI: success or error state
 ```
 
-## Suggested Backend Layout
+## Repository Layout
 
 ```text
-backend/
-├── main.q
-├── config/
-│   └── app-config.q
-├── router/
-│   ├── websocket.q
-│   ├── dispatcher.q
-│   └── registry.q
-├── endpoints/
-│   ├── health_check.q
-│   ├── top_movers.q
-│   ├── trades.q
-│   └── pnl_series.q
-├── utils/
-│   ├── parse.q
-│   ├── response.q
-│   ├── types.q
-│   └── tables.q
-└── tests/
-```
-
-## Suggested Frontend Layout
-
-```text
-frontend/
-├── src/
-│   ├── app/
-│   ├── components/
-│   ├── features/
-│   ├── hooks/
-│   ├── services/
-│   │   └── kdbClient.ts
-│   ├── theme/
-│   └── utils/
-└── public/
+apps/
+├── q-gateway/
+│   ├── src/
+│   │   ├── core/
+│   │   ├── endpoints/
+│   │   └── utils/
+│   └── tests/
+├── dashboard/
+│   └── src/
+packages/
+├── protocol/
+├── react-client/
+└── finance-ui/
 ```
 
 ## Design Principles For Extensions
 
 - Adding a new endpoint should not require editing the transport logic beyond registry wiring.
 - JSON contracts should stay boring and stable.
-- Frontend components should be usable with either live or mocked data.
+- Frontend components should be usable with either live or demo data.
 - Shared utilities should absorb repetitive parsing work rather than duplicating it across endpoints.
 
 ## Operational Considerations
@@ -204,15 +162,15 @@ frontend/
 As the implementation matures, expect to add:
 
 - authentication and permissioning
-- heartbeat / reconnect handling
-- request timeout strategy
+- richer streaming or subscription envelopes
+- additional q-side smoke coverage with a real runtime
 - structured logging
-- subscription-style pushes for live updates
-- test fixtures for request and response payloads
+- release packaging for shared frontend libraries
 
 ## Related Docs
 
 - [Backend Architecture](backend/architecture.md)
+- [Adding Backend Endpoints](backend/adding-endpoints.md)
 - [Getting Started](getting-started.md)
 - [Endpoint Pattern](endpoint-pattern.md)
 - [Request / Response Contracts](request-response-contracts.md)

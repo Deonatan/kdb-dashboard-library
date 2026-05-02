@@ -14,10 +14,9 @@ Every request should follow this shape:
 
 ```json
 {
-  "requestId": "unique-client-request-id",
+  "id": "unique-client-request-id",
   "func": "publicFunctionName",
-  "params": {},
-  "meta": {}
+  "params": {}
 }
 ```
 
@@ -25,10 +24,9 @@ Every request should follow this shape:
 
 | Field | Required | Type | Purpose |
 | --- | --- | --- | --- |
-| `requestId` | Yes | `string` | Client-generated correlation ID |
+| `id` | Yes | `string` | Client-generated correlation ID |
 | `func` | Yes | `string` | Public endpoint name registered in the backend |
 | `params` | Yes | `object` | Function-specific parameters |
-| `meta` | No | `object` | Optional caller metadata |
 
 ## Base Response Envelope
 
@@ -36,11 +34,12 @@ Every response should follow this shape:
 
 ```json
 {
-  "requestId": "unique-client-request-id",
-  "status": "ok",
+  "id": "unique-client-request-id",
+  "ok": true,
   "func": "publicFunctionName",
   "data": {},
-  "error": null
+  "server": "kdb-dashboard-library",
+  "ts": "2026.05.03D00:00:00.000000000"
 }
 ```
 
@@ -48,11 +47,13 @@ Every response should follow this shape:
 
 | Field | Required | Type | Purpose |
 | --- | --- | --- | --- |
-| `requestId` | Yes | `string` | Echoes the request correlation ID |
-| `status` | Yes | `string` | `ok` or `error` |
+| `id` | Yes | `string` | Echoes the request correlation ID |
+| `ok` | Yes | `boolean` | `true` on success, `false` on failure |
 | `func` | Yes | `string` | Echoes the requested function |
-| `data` | Yes | `object` or `null` | Success payload |
-| `error` | Yes | `object` or `null` | Error payload |
+| `data` | Yes | `object` | Success payload |
+| `error` | No | `object` | Error payload when `ok` is `false` |
+| `server` | Yes | `string` | Service name |
+| `ts` | Yes | `string` | Backend timestamp string |
 
 ## Example: Health Check
 
@@ -60,8 +61,8 @@ Every response should follow this shape:
 
 ```json
 {
-  "requestId": "health-001",
-  "func": "healthCheck",
+  "id": "health-001",
+  "func": "health.check",
   "params": {}
 }
 ```
@@ -70,15 +71,16 @@ Every response should follow this shape:
 
 ```json
 {
-  "requestId": "health-001",
-  "status": "ok",
-  "func": "healthCheck",
+  "id": "health-001",
+  "ok": true,
+  "func": "health.check",
   "data": {
-    "connected": true,
+    "status": "ok",
     "service": "kdb-dashboard-library",
-    "timestamp": "2026-05-03T00:00:00.000Z"
+    "timestamp": "2026.05.03D00:00:00.000000000"
   },
-  "error": null
+  "server": "kdb-dashboard-library",
+  "ts": "2026.05.03D00:00:00.000000000"
 }
 ```
 
@@ -88,12 +90,10 @@ Every response should follow this shape:
 
 ```json
 {
-  "requestId": "movers-001",
-  "func": "getTopMovers",
+  "id": "movers-001",
+  "func": "top.movers",
   "params": {
-    "date": "2026-05-03",
-    "limit": 10,
-    "universe": "EQUITIES_US"
+    "limit": 10
   }
 }
 ```
@@ -102,33 +102,31 @@ Every response should follow this shape:
 
 ```json
 {
-  "requestId": "movers-001",
-  "status": "ok",
-  "func": "getTopMovers",
+  "id": "movers-001",
+  "ok": true,
+  "func": "top.movers",
   "data": {
     "rows": [
       { "sym": "AAPL", "movePct": 1.82, "volume": 50213421 },
       { "sym": "MSFT", "movePct": 1.37, "volume": 29011420 }
     ],
-    "asOf": "2026-05-03T09:30:00.000Z"
+    "asOf": "2026.05.03D09:30:00.000000000"
   },
-  "error": null
+  "server": "kdb-dashboard-library",
+  "ts": "2026.05.03D09:30:00.000000000"
 }
 ```
 
-## Example: Time Series Data
+## Example: Dashboard Snapshot
 
 ### Request
 
 ```json
 {
-  "requestId": "pnl-001",
-  "func": "getPnLSeries",
+  "id": "snapshot-001",
+  "func": "dashboard.snapshot",
   "params": {
-    "book": "EQD_APAC",
-    "start": "2026-05-01T00:00:00.000Z",
-    "end": "2026-05-03T23:59:59.999Z",
-    "interval": "15m"
+    "book": "EQD_APAC"
   }
 }
 ```
@@ -137,17 +135,18 @@ Every response should follow this shape:
 
 ```json
 {
-  "requestId": "pnl-001",
-  "status": "ok",
-  "func": "getPnLSeries",
+  "id": "snapshot-001",
+  "ok": true,
+  "func": "dashboard.snapshot",
   "data": {
-    "series": [
-      { "ts": "2026-05-03T09:00:00.000Z", "pnl": 124500.12 },
-      { "ts": "2026-05-03T09:15:00.000Z", "pnl": 125920.47 }
-    ],
-    "currency": "USD"
+    "overview": [],
+    "allocation": [],
+    "priceSeries": [],
+    "volumeSeries": [],
+    "movers": []
   },
-  "error": null
+  "server": "kdb-dashboard-library",
+  "ts": "2026.05.03D09:00:00.000000000"
 }
 ```
 
@@ -157,48 +156,47 @@ Every response should follow this shape:
 
 ```json
 {
-  "requestId": "bad-001",
-  "status": "error",
+  "id": "bad-001",
+  "ok": false,
   "func": "getSecretSauce",
-  "data": null,
   "error": {
-    "code": "UNKNOWN_FUNCTION",
-    "message": "No endpoint registered for getSecretSauce",
-    "details": {
-      "availableFunctions": ["healthCheck", "getTrades", "getTopMovers", "getPnLSeries"]
-    }
-  }
+    "code": "unknownFunction",
+    "message": "No endpoint is registered for the requested func",
+    "details": {}
+  },
+  "server": "kdb-dashboard-library",
+  "ts": "2026.05.03D09:00:00.000000000"
 }
 ```
 
-### Validation Failure
+### Runtime Failure
 
 ```json
 {
-  "requestId": "bad-002",
-  "status": "error",
-  "func": "getPnLSeries",
-  "data": null,
+  "id": "bad-002",
+  "ok": false,
+  "func": "dashboard.snapshot",
   "error": {
-    "code": "INVALID_PARAMS",
-    "message": "start must be before end",
+    "code": "runtime",
+    "message": "Endpoint execution failed",
     "details": {
-      "start": "2026-05-04T00:00:00.000Z",
-      "end": "2026-05-03T00:00:00.000Z"
+      "reason": "example backend exception text"
     }
-  }
+  },
+  "server": "kdb-dashboard-library",
+  "ts": "2026.05.03D09:00:00.000000000"
 }
 ```
 
 ## Contract Rules
 
-- `requestId` must always be echoed back.
+- `id` must always be echoed back.
 - `func` should match a registered public endpoint name.
-- `status` should be either `ok` or `error`.
-- `data` should be `null` on errors.
-- `error` should be `null` on success.
-- Timestamps should use ISO 8601 strings when serialized to JSON.
-- Tables should usually be represented as arrays of row objects for frontend convenience.
+- `ok` should be `true` or `false`.
+- `data` should be omitted or ignored on errors.
+- `error` should be omitted or ignored on success.
+- timestamps should be serialized consistently
+- tables should usually be represented as arrays of row objects for frontend convenience
 
 ## Notes On q Type Handling
 

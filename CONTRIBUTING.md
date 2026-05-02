@@ -17,23 +17,25 @@ This project is intended to become a clean open-source starter kit for connectin
 The repository is expected to evolve around this shape:
 
 ```text
-backend/   # q WebSocket server, router, endpoints, shared utils
-frontend/  # React client, hooks, services, dashboard components, theme
-docs/      # Architecture, setup, contracts, roadmap
+apps/q-gateway/  # q WebSocket server, router, endpoints, shared utils
+apps/dashboard/  # React dashboard application
+packages/        # protocol, react-client, finance-ui
+docs/            # Architecture, setup, contracts, roadmap
 ```
 
 Please avoid mixing concerns unnecessarily. For example:
 
-- add new `q` business functions under `backend/endpoints/`
-- keep common parsers and coercion helpers under `backend/utils/`
-- keep WebSocket connection logic in frontend services or hooks rather than inside visualization components
+- add new `q` business functions under `apps/q-gateway/src/endpoints/`
+- keep common parsers and coercion helpers under `apps/q-gateway/src/utils/`
+- keep WebSocket connection logic inside `packages/react-client/`
+- keep reusable UI primitives inside `packages/finance-ui/`
 
 ## Developer Workflow
 
 1. Create or update the backend endpoint you need.
 2. Register it through the backend function registry.
-3. Add or update the frontend request wrapper.
-4. Connect the result to a presentational component.
+3. Add or update the shared request or protocol layer if the contract changes.
+4. Connect the result to a presentational component in the dashboard app.
 5. Update the relevant docs if the contract or extension pattern changes.
 
 ## Commit Guidance
@@ -43,8 +45,9 @@ Use small incremental commits with descriptive messages.
 Good examples:
 
 - `docs: add request-response contract guide`
-- `backend: add registry-based websocket dispatcher`
-- `frontend: scaffold websocket client hook`
+- `feat(q-gateway): add registry-based websocket dispatcher`
+- `feat(dashboard): add finance-themed websocket workbench`
+- `feat(react-client): add reusable request hooks`
 
 Try to avoid bundling unrelated backend, frontend, and docs changes into a single commit unless they form one tightly coupled feature.
 
@@ -70,15 +73,13 @@ When adding backend endpoints:
 - handle parse errors and unknown functions consistently
 - reuse utility functions for type coercion, null handling, and table-to-JSON shaping
 
-If an endpoint needs special transformation logic for nested data, add that to reusable utils when it is broadly useful.
-
 ## Frontend Contribution Notes
 
 When adding frontend features:
 
-- treat the WebSocket client as shared infrastructure
+- treat `packages/react-client` as shared infrastructure
 - keep request state and presentation concerns separated
-- design components so they can render mock data as well as live data
+- design components so they can render demo data as well as live data
 - preserve the finance-focused visual direction unless there is a deliberate design update
 
 The default look should feel comfortable to users familiar with terminal-style finance tools: dense, legible, and high contrast.
@@ -92,6 +93,7 @@ Priority docs:
 - `README.md`
 - `docs/architecture.md`
 - `docs/backend/architecture.md`
+- `docs/backend/adding-endpoints.md`
 - `docs/getting-started.md`
 - `docs/endpoint-pattern.md`
 - `docs/request-response-contracts.md`

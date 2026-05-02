@@ -67,7 +67,27 @@ pnpm install
 
 ### 2. Start the q gateway
 
-`q` is not bundled with this repository, so install kdb+/q separately and ensure `q` is on your `PATH`.
+`q` is not bundled with this repository, so install kdb+/q separately.
+
+The gateway startup script will try the following automatically:
+
+- `Q_BIN`
+- `q` on your `PATH`
+- `~/.kx/bin/q` for KDB-X Community Edition
+- `~/q/m64/q`
+- `~/q/l64/q`
+
+If you want to point at a specific binary, override it inline:
+
+```bash
+Q_BIN=/absolute/path/to/q pnpm dev:gateway
+```
+
+If startup fails, inspect the detected binary and license state with:
+
+```bash
+pnpm q:doctor
+```
 
 ```bash
 pnpm dev:gateway

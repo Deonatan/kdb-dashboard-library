@@ -42,7 +42,25 @@ pnpm install
 
 ### 2. Start the q gateway
 
-The gateway startup script expects `q` on your `PATH`.
+The gateway startup script will look for `q` in the following order:
+
+- `Q_BIN`
+- `q` on your `PATH`
+- `~/.kx/bin/q`
+- `~/q/m64/q`
+- `~/q/l64/q`
+
+To force a specific binary:
+
+```bash
+Q_BIN=/absolute/path/to/q pnpm dev:gateway
+```
+
+To inspect the resolved binary and current license health:
+
+```bash
+pnpm q:doctor
+```
 
 ```bash
 pnpm dev:gateway

@@ -9,6 +9,7 @@
     "dev:dashboard": "pnpm --filter @kdb-dashboard-library/dashboard dev",
     "dev:gateway": "./scripts/dev-gateway.sh",
     "lint": "turbo run lint --filter=!@kdb-dashboard-library/q-gateway",
+    "q:doctor": "./scripts/doctor-q.sh",
     "test": "turbo run test --filter=!@kdb-dashboard-library/q-gateway",
     "test:q": "./scripts/test-gateway.sh",
     "typecheck": "turbo run typecheck --filter=!@kdb-dashboard-library/q-gateway",

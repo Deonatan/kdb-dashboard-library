@@ -22,6 +22,13 @@ Run locally from the repo root with:
 pnpm dev:gateway
 ```
 
+The repo will auto-discover `q` from `Q_BIN`, `PATH`, `~/.kx/bin/q`, and common `~/q/*/q` install locations.
+If you need to inspect the selected runtime or license state, run:
+
+```bash
+pnpm q:doctor
+```
+
 Or directly inside this folder:
 
 ```bash

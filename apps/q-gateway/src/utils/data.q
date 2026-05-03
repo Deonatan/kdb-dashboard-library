@@ -1,26 +1,22 @@
-\d .kdb.util
+.kdb.util.isBytes:{4h=type x};
+.kdb.util.isDict:{99h=type x};
+.kdb.util.isSymbol:{-11h=type x};
+.kdb.util.isText:{10h=type x};
 
-isBytes:{4h=type x};
-isDict:{99h=type x};
-isSymbol:{-11h=type x};
-isText:{10h=type x};
-
-asSymbol:{[x]
-  $[isSymbol x; x; `$ asText x]
+.kdb.util.asSymbol:{[x]
+  $[.kdb.util.isSymbol[x]; x; `$ .kdb.util.asText[x]]
  };
 
-asText:{[x]
-  $[isText x; x; isSymbol x; string x; isBytes x; "c"$ x; string x]
+.kdb.util.asText:{[x]
+  $[.kdb.util.isText[x]; x; .kdb.util.isSymbol[x]; string x; .kdb.util.isBytes[x]; "c"$ x; string x]
  };
 
-emptyDict:{()!()};
+.kdb.util.emptyDict:{()!()};
 
-getOr:{[dict; key; fallback]
-  $[isDict dict; $[key in key dict; dict key; fallback]; fallback]
+.kdb.util.getOr:{[dict; dictKey; fallback]
+  $[.kdb.util.isDict[dict]; $[dictKey in key dict; dict dictKey; fallback]; fallback]
  };
 
-asParams:{[value]
-  $[isDict value; value; enlist[`value]!enlist value]
+.kdb.util.asParams:{[inputValue]
+  $[.kdb.util.isDict[inputValue]; inputValue; enlist[`value]!enlist inputValue]
  };
-
-\d .

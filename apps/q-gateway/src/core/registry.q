@@ -1,33 +1,29 @@
-\d .kdb.registry
+.kdb.registry.handlers:`symbol$()!();
+.kdb.registry.meta:`symbol$()!();
 
-handlers:`symbol$()!();
-meta:`symbol$()!();
-
-clear:{
-  handlers::`symbol$()!();
-  meta::`symbol$()!();
+.kdb.registry.clear:{
+  .kdb.registry.handlers::`symbol$()!();
+  .kdb.registry.meta::`symbol$()!();
   `registryCleared
  };
 
-register:{[name; fn; descriptor]
-  sym:.kdb.util.asSymbol name;
-  handlers[sym]:fn;
-  meta[sym]:descriptor;
+.kdb.registry.register:{[name; fn; descriptor]
+  sym:.kdb.util.asSymbol[name];
+  .kdb.registry.handlers:.kdb.registry.handlers,enlist[sym]!enlist fn;
+  .kdb.registry.meta:.kdb.registry.meta,enlist[sym]!enlist descriptor;
   sym
  };
 
-has:{[name]
-  .kdb.util.asSymbol name in key handlers
+.kdb.registry.has:{[name]
+  .kdb.util.asSymbol[name] in key .kdb.registry.handlers
  };
 
-get:{[name]
-  sym:.kdb.util.asSymbol name;
-  if[not has sym; '"unknown function"];
-  handlers sym
+.kdb.registry.get:{[name]
+  sym:.kdb.util.asSymbol[name];
+  if[not .kdb.registry.has[sym]; '"unknown function"];
+  .kdb.registry.handlers sym
  };
 
-list:{
-  meta
+.kdb.registry.list:{
+  .kdb.registry.meta
  };
-
-\d .

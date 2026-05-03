@@ -1,14 +1,1 @@
-.kdb.registry.register[
-  `debug.echo;
-  {[params]
-    `receivedAt`params!(
-      string .z.p;
-      params
-    )
-  };
-  `name`description`group!(
-    "debug.echo";
-    "Echoes request params back to the client to validate JSON parsing.";
-    "debug"
-  )
-];
+.kdb.registry.register[`debug.echo; {[params] `receivedAt`params!(string .z.p; params)}; `name`description`group!("debug.echo"; "Echoes request params back to the client to validate JSON parsing."; "debug")];

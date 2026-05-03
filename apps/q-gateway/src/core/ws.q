@@ -1,38 +1,34 @@
-\d .kdb.ws
+.kdb.ws.clients:`int$();
 
-clients:`int$();
-
-onOpen:{[h]
-  clients,:enlist h;
+.kdb.ws.onOpen:{[h]
+  .kdb.ws.clients,:enlist h;
   0N! "websocket open: ",string h;
   h
  };
 
-onClose:{[h]
-  clients:clients except enlist h;
+.kdb.ws.onClose:{[h]
+  .kdb.ws.clients:.kdb.ws.clients except enlist h;
   0N! "websocket close: ",string h;
   h
  };
 
-send:{[h; payload]
-  neg[h] .kdb.json.stringify payload
+.kdb.ws.send:{[h; payload]
+  neg[h] .kdb.json.stringify[payload]
  };
 
-broadcast:{[payload]
-  {send[x; payload]} each clients;
-  count clients
+.kdb.ws.broadcast:{[payload]
+  {.kdb.ws.send[x; payload]} each .kdb.ws.clients;
+  count .kdb.ws.clients
  };
 
-onMessage:{[raw]
+.kdb.ws.onMessage:{[raw]
   reply:.[.kdb.router.handle; enlist raw; {[err] .kdb.response.fail[""; "transport"; "internal"; err; .kdb.util.emptyDict[]]}];
-  send[.z.w; reply]
+  .kdb.ws.send[.z.w; reply]
  };
 
-install:{
+.kdb.ws.install:{
   .z.wo::.kdb.ws.onOpen;
   .z.wc::.kdb.ws.onClose;
   .z.ws::.kdb.ws.onMessage;
   `callbacksInstalled
  };
-
-\d .

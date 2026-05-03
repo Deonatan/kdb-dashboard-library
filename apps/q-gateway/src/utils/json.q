@@ -1,15 +1,11 @@
-\d .kdb.json
-
-normalize:{[raw]
-  $[.kdb.util.isText raw; raw; .kdb.util.isBytes raw; "c"$ raw; '"Unsupported websocket payload type"]
+.kdb.json.normalize:{[raw]
+  $[.kdb.util.isText[raw]; raw; .kdb.util.isBytes[raw]; "c"$ raw; '"Unsupported websocket payload type"]
  };
 
-parse:{[raw]
-  .j.k normalize raw
+.kdb.json.parse:{[raw]
+  .j.k .kdb.json.normalize[raw]
  };
 
-stringify:{[payload]
+.kdb.json.stringify:{[payload]
   .j.j payload
  };
-
-\d .

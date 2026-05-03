@@ -1,30 +1,27 @@
-\d .kdb.boot
-
-loadEndpoints:{
+.kdb.boot.loadEndpoints:{
   root:.kdb.cfg.endpointRoot[];
   dir:hsym `$ root,"/";
   files:key dir;
   if[0h=type files; '"endpoint directory not found"];
 
   qfiles:asc files where files like "*.q";
-  {system "l ",root,"/",string x} each qfiles;
+  {[root; file] system "l ",root,"/",string file}[root;] each qfiles;
   qfiles
  };
 
-listen:{
-  port:string value .kdb.cfg.port[];
-  system "p ",port;
+.kdb.boot.listen:{
+  port:.kdb.util.asText[.kdb.cfg.port[]];
+  cmd:"p ",port;
+  system[cmd];
   port
  };
 
-start:{
+.kdb.boot.start:{
   .kdb.registry.clear[];
-  loaded:loadEndpoints[];
+  loaded:.kdb.boot.loadEndpoints[];
   .kdb.ws.install[];
-  port:listen[];
+  port:.kdb.boot.listen[];
   0N! .kdb.cfg.serviceName[]," listening on port ",port;
   if[count loaded; 0N! "Loaded endpoints: ",", " sv string each loaded];
   `started
  };
-
-\d .

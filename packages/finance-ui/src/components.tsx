@@ -11,6 +11,7 @@ import {
   AreaChart,
   Bar,
   BarChart,
+  CartesianGrid,
   Cell,
   Pie,
   PieChart,
@@ -112,17 +113,26 @@ export function PriceLineChart({
   return (
     <div className="chart-surface">
       <ResponsiveContainer width="100%" height={280}>
-        <AreaChart data={data}>
+        <AreaChart data={data} margin={{ bottom: 0, left: -18, right: 10, top: 8 }}>
           <defs>
             <linearGradient id="priceGradient" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="5%" stopColor="#ffb000" stopOpacity={0.7} />
-              <stop offset="95%" stopColor="#ffb000" stopOpacity={0.05} />
+              <stop offset="5%" stopColor="#f6a600" stopOpacity={0.28} />
+              <stop offset="95%" stopColor="#f6a600" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <XAxis dataKey="ts" stroke="#6d7a84" tickLine={false} />
+          <CartesianGrid stroke="#223038" strokeDasharray="2 6" vertical={false} />
+          <XAxis
+            axisLine={false}
+            dataKey="ts"
+            stroke="#72808a"
+            tick={{ fill: '#7f8a92', fontFamily: 'IBM Plex Mono', fontSize: 11 }}
+            tickLine={false}
+          />
           <YAxis
+            axisLine={false}
             domain={['auto', 'auto']}
-            stroke="#6d7a84"
+            stroke="#72808a"
+            tick={{ fill: '#7f8a92', fontFamily: 'IBM Plex Mono', fontSize: 11 }}
             tickFormatter={(value) => `${value.toFixed(2)}`}
             tickLine={false}
           />
@@ -133,7 +143,7 @@ export function PriceLineChart({
           <Area
             dataKey="px"
             fill="url(#priceGradient)"
-            stroke="#ffb000"
+            stroke="#f6a600"
             strokeWidth={2}
             type="monotone"
           />
@@ -147,14 +157,26 @@ export function VolumeBarChart({ data }: { data: VolumePoint[] }) {
   return (
     <div className="chart-surface">
       <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={data}>
-          <XAxis dataKey="bucket" stroke="#6d7a84" tickLine={false} />
-          <YAxis stroke="#6d7a84" tickLine={false} />
+        <BarChart data={data} margin={{ bottom: 0, left: -18, right: 10, top: 8 }}>
+          <CartesianGrid stroke="#223038" strokeDasharray="2 6" vertical={false} />
+          <XAxis
+            axisLine={false}
+            dataKey="bucket"
+            stroke="#72808a"
+            tick={{ fill: '#7f8a92', fontFamily: 'IBM Plex Mono', fontSize: 11 }}
+            tickLine={false}
+          />
+          <YAxis
+            axisLine={false}
+            stroke="#72808a"
+            tick={{ fill: '#7f8a92', fontFamily: 'IBM Plex Mono', fontSize: 11 }}
+            tickLine={false}
+          />
           <Tooltip
             contentStyle={tooltipStyle}
             formatter={(value) => [`${asNumber(value).toFixed(1)}M`, 'Volume']}
           />
-          <Bar dataKey="volume" fill="#2ce6b8" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="volume" fill="#2ce6b8" radius={0} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -249,8 +271,9 @@ const asNumber = (value: unknown) =>
   typeof value === 'number' ? value : Number(value ?? 0)
 
 const tooltipStyle = {
-  background: '#081015',
-  border: '1px solid #263039',
-  borderRadius: 12,
-  color: '#f3f0d8',
+  background: '#05090c',
+  border: '1px solid #33414a',
+  borderRadius: 2,
+  color: '#edf0ea',
+  fontFamily: 'IBM Plex Mono, monospace',
 }

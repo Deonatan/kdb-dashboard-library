@@ -1,17 +1,17 @@
 :root {
   color-scheme: dark;
-  --fx-accent: #ffb000;
-  --fx-accent-strong: #ff7a00;
-  --fx-bg: #05080b;
-  --fx-bg-elevated: rgba(10, 17, 22, 0.96);
-  --fx-border: rgba(69, 83, 95, 0.48);
-  --fx-grid: rgba(48, 61, 70, 0.55);
-  --fx-ink: #f2efdf;
+  --fx-accent: #f6a600;
+  --fx-accent-strong: #ff6f00;
+  --fx-bg: #020508;
+  --fx-bg-elevated: rgba(6, 10, 13, 0.985);
+  --fx-border: rgba(88, 101, 111, 0.4);
+  --fx-grid: rgba(55, 67, 75, 0.42);
+  --fx-ink: #edf0ea;
   --fx-muted: #91a0aa;
   --fx-negative: #ff6677;
-  --fx-panel: linear-gradient(180deg, rgba(10, 17, 22, 0.96), rgba(6, 11, 14, 0.98));
+  --fx-panel: linear-gradient(180deg, rgba(10, 15, 19, 0.98), rgba(5, 9, 12, 1));
   --fx-positive: #2ce6b8;
-  --fx-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  --fx-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
   --fx-warning: #ff7a00;
   --fx-font-mono: "IBM Plex Mono", monospace;
   --fx-font-sans: "IBM Plex Sans", sans-serif;
@@ -25,9 +25,14 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(255, 176, 0, 0.12), transparent 30%),
-    radial-gradient(circle at right, rgba(44, 230, 184, 0.08), transparent 26%),
+    linear-gradient(rgba(28, 36, 42, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 36, 42, 0.14) 1px, transparent 1px),
+    radial-gradient(circle at top right, rgba(246, 166, 0, 0.08), transparent 24%),
     var(--fx-bg);
+  background-size:
+    28px 28px,
+    28px 28px,
+    auto;
   color: var(--fx-ink);
   font-family: var(--fx-font-sans);
 }
@@ -40,16 +45,18 @@ textarea {
 
 .finance-shell {
   min-height: 100svh;
-  padding: 24px;
+  padding: 14px;
 }
 
 .terminal-shell {
-  max-width: 1480px;
+  max-width: 1520px;
   margin: 0 auto;
   background: var(--fx-bg-elevated);
   border: 1px solid var(--fx-border);
-  border-radius: 24px;
-  box-shadow: var(--fx-shadow);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.02),
+    var(--fx-shadow);
   overflow: hidden;
 }
 
@@ -58,11 +65,11 @@ textarea {
   justify-content: space-between;
   gap: 20px;
   align-items: end;
-  padding: 24px 28px;
+  padding: 18px 20px;
   border-bottom: 1px solid var(--fx-border);
   background:
-    linear-gradient(90deg, rgba(255, 176, 0, 0.12), transparent 30%),
-    linear-gradient(180deg, rgba(14, 24, 31, 0.98), rgba(8, 13, 17, 0.98));
+    linear-gradient(90deg, rgba(246, 166, 0, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(11, 18, 23, 0.99), rgba(7, 11, 14, 1));
 }
 
 .terminal-shell__eyebrow,
@@ -71,8 +78,8 @@ textarea {
   margin: 0;
   color: var(--fx-muted);
   font-family: var(--fx-font-mono);
-  font-size: 0.74rem;
-  letter-spacing: 0.16em;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
@@ -84,26 +91,29 @@ textarea {
 }
 
 .terminal-shell__heading {
-  font-size: clamp(2rem, 5vw, 3.8rem);
+  max-width: 10ch;
+  font-size: clamp(1.85rem, 4vw, 3.15rem);
+  letter-spacing: -0.04em;
 }
 
 .terminal-shell__status {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
   flex-wrap: wrap;
   justify-content: end;
 }
 
 .terminal-shell__body {
-  padding: 24px 28px 28px;
+  padding: 16px 20px 20px;
 }
 
 .panel {
   background: var(--fx-panel);
   border: 1px solid var(--fx-border);
-  border-radius: 20px;
+  border-radius: 8px;
   min-height: 100%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.015);
 }
 
 .panel__header {
@@ -111,33 +121,35 @@ textarea {
   justify-content: space-between;
   gap: 16px;
   align-items: start;
-  padding: 18px 20px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--fx-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0));
 }
 
 .panel__body {
-  padding: 20px;
+  padding: 14px;
 }
 
 .status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 999px;
+  gap: 7px;
+  padding: 7px 10px;
   border: 1px solid var(--fx-border);
   font-family: var(--fx-font-mono);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .status-badge::before {
   content: "";
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
+  width: 7px;
+  height: 7px;
   background: currentColor;
+  flex: 0 0 auto;
 }
 
 .status-badge--accent {
@@ -163,14 +175,13 @@ textarea {
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .metric-card {
-  padding: 18px;
-  border-radius: 16px;
+  padding: 14px;
   border: 1px solid var(--fx-border);
-  background: rgba(7, 11, 14, 0.86);
+  background: rgba(7, 11, 14, 0.92);
 }
 
 .metric-card--accent {
@@ -187,13 +198,14 @@ textarea {
 
 .metric-card__value {
   display: block;
-  margin-top: 10px;
+  margin-top: 8px;
   font-family: var(--fx-font-mono);
-  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-size: clamp(1.3rem, 1.7vw, 1.75rem);
 }
 
 .chart-surface {
   min-height: 280px;
+  padding-top: 6px;
 }
 
 .chart-surface--compact {
@@ -203,13 +215,13 @@ textarea {
 .allocation-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(220px, 1fr);
-  gap: 16px;
+  gap: 14px;
   align-items: center;
 }
 
 .allocation-list {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .allocation-row {
@@ -217,10 +229,9 @@ textarea {
   justify-content: space-between;
   gap: 16px;
   align-items: center;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 10px 12px;
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .allocation-row__label {
@@ -247,7 +258,7 @@ textarea {
 
 .movers-table th,
 .movers-table td {
-  padding: 12px 10px;
+  padding: 10px 8px;
   text-align: left;
   border-bottom: 1px solid var(--fx-grid);
 }
@@ -257,6 +268,11 @@ textarea {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+
+.movers-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .positive {
@@ -279,12 +295,12 @@ textarea {
 
 @media (max-width: 720px) {
   .finance-shell {
-    padding: 12px;
+    padding: 8px;
   }
 
   .terminal-shell__header,
   .terminal-shell__body {
-    padding-inline: 16px;
+    padding-inline: 14px;
   }
 
   .terminal-shell__header {

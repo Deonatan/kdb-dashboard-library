@@ -117,8 +117,8 @@ export const demoSnapshot: DashboardSnapshot = {
   ],
   overview: [
     { label: 'Net Exposure', tone: 'accent', value: '42.8M' },
-    { label: 'Day PnL', tone: 'positive', value: '+1.28M' },
-    { label: 'VaR 95', tone: 'warning', value: '3.7M' },
+    { label: 'Daily P&L', tone: 'positive', value: '+1.28M' },
+    { label: '95% VaR', tone: 'warning', value: '3.7M' },
     { label: 'Gross Notional', tone: 'neutral', value: '88.4M' },
   ],
   priceSeries: [

@@ -50,6 +50,43 @@ function App() {
   const latestEnvelope = useDeferredValue(
     latestResponse ? JSON.stringify(latestResponse, null, 2) : '',
   )
+  const connectionLabel =
+    status === 'open'
+      ? 'Live'
+      : status === 'connecting'
+        ? 'Connecting'
+        : status === 'error'
+          ? 'Error'
+          : 'Offline'
+  const connectionTone =
+    status === 'open'
+      ? 'positive'
+      : status === 'error'
+        ? 'negative'
+        : 'warning'
+  const serviceName = health.data?.service ?? 'kdb-dashboard-library'
+  const heartbeatState =
+    health.data?.status === 'ok'
+      ? 'Healthy'
+      : status === 'open'
+        ? 'Pending'
+        : 'Standby'
+  const heartbeatTone =
+    health.data?.status === 'ok'
+      ? 'positive'
+      : status === 'open'
+        ? 'warning'
+        : 'neutral'
+  const feedState = snapshot.error
+    ? 'Attention'
+    : status === 'open'
+      ? 'Live data'
+      : 'Fallback'
+  const feedTone = snapshot.error
+    ? 'negative'
+    : status === 'open'
+      ? 'positive'
+      : 'warning'
 
   const handleEcho = async () => {
     try {
@@ -77,37 +114,61 @@ function App() {
 
   return (
     <TerminalShell
-      eyebrow="q websocket starter"
-      heading="Bloomberg-flavored React + kdb dashboards."
+      eyebrow="kdb dashboard library"
+      heading="Cross-Asset Risk Console"
       status={
         <>
           <StatusBadge
-            label={
-              status === 'open'
-                ? 'Live'
-                : status === 'connecting'
-                  ? 'Connecting'
-                  : status === 'error'
-                    ? 'Error'
-                    : 'Offline'
-            }
-            tone={
-              status === 'open'
-                ? 'positive'
-                : status === 'error'
-                  ? 'negative'
-                  : 'warning'
-            }
+            label={connectionLabel}
+            tone={connectionTone}
           />
           <StatusBadge label={url} tone="accent" />
         </>
       }
     >
       <div className="dashboard-page">
+        <section className="dashboard-strip">
+          <article className="strip-card">
+            <p className="strip-card__label">gateway</p>
+            <strong className={`strip-card__value strip-card__value--${connectionTone}`}>
+              {connectionLabel}
+            </strong>
+            <span className="strip-card__meta">{serviceName}</span>
+          </article>
+
+          <article className="strip-card">
+            <p className="strip-card__label">feed state</p>
+            <strong className={`strip-card__value strip-card__value--${feedTone}`}>
+              {feedState}
+            </strong>
+            <span className="strip-card__meta">
+              {snapshot.lastUpdated ?? 'Awaiting first payload'}
+            </span>
+          </article>
+
+          <article className="strip-card">
+            <p className="strip-card__label">transport</p>
+            <strong className="strip-card__value strip-card__value--accent">
+              WebSocket
+            </strong>
+            <span className="strip-card__meta">{url}</span>
+          </article>
+
+          <article className="strip-card">
+            <p className="strip-card__label">heartbeat</p>
+            <strong className={`strip-card__value strip-card__value--${heartbeatTone}`}>
+              {heartbeatState}
+            </strong>
+            <span className="strip-card__meta">
+              {health.lastUpdated ?? 'Awaiting gateway heartbeat'}
+            </span>
+          </article>
+        </section>
+
         <section className="dashboard-grid dashboard-grid--top">
           <Panel
-            eyebrow="overview"
-            title="Portfolio pulse"
+            eyebrow="risk summary"
+            title="Desk overview"
             action={
               <div className="button-row">
                 <button className="app-button" onClick={connect} type="button">
@@ -125,64 +186,75 @@ function App() {
           >
             <MetricGrid metrics={snapshotData.overview} />
             <div className="panel-note">
-              <strong>Backend status:</strong>{' '}
-              {health.data?.status ?? 'demo snapshot'}
+              <strong>Gateway:</strong>
+              {health.data?.status ?? 'Awaiting heartbeat'}
               <span className="panel-note__meta">
-                {health.lastUpdated ?? 'Waiting for q health check'}
+                {health.lastUpdated ?? 'No server heartbeat received yet'}
               </span>
             </div>
           </Panel>
 
-          <Panel eyebrow="explainability" title="Endpoint pattern">
-            <div className="endpoint-list">
-              <div className="endpoint-list__item">
-                <span className="endpoint-list__func">health.check</span>
-                <p>Connectivity smoke test for the frontend shell.</p>
+          <Panel eyebrow="service map" title="Route catalog">
+            <div className="route-list">
+              <div className="route-list__item">
+                <div className="route-list__top">
+                  <span className="route-list__func">health.check</span>
+                  <span className="route-list__tag">heartbeat</span>
+                </div>
+                <p>Gateway availability, service identity, and server timestamp.</p>
               </div>
-              <div className="endpoint-list__item">
-                <span className="endpoint-list__func">dashboard.snapshot</span>
-                <p>Single payload powering cards, charts, and movers table.</p>
+
+              <div className="route-list__item">
+                <div className="route-list__top">
+                  <span className="route-list__func">dashboard.snapshot</span>
+                  <span className="route-list__tag">primary feed</span>
+                </div>
+                <p>Overview metrics, allocation, intraday series, and active movers.</p>
               </div>
-              <div className="endpoint-list__item">
-                <span className="endpoint-list__func">debug.echo</span>
-                <p>Helpful while onboarding new request contracts and params.</p>
+
+              <div className="route-list__item">
+                <div className="route-list__top">
+                  <span className="route-list__func">debug.echo</span>
+                  <span className="route-list__tag">validation</span>
+                </div>
+                <p>Request and response contract validation for new route development.</p>
               </div>
             </div>
           </Panel>
         </section>
 
         <section className="dashboard-grid dashboard-grid--charts">
-          <Panel eyebrow="price action" title="Intraday path">
+          <Panel eyebrow="pricing" title="Intraday price">
             <PriceLineChart data={snapshotData.priceSeries} />
           </Panel>
 
-          <Panel eyebrow="liquidity" title="Volume profile">
+          <Panel eyebrow="trading activity" title="Volume by interval">
             <VolumeBarChart data={snapshotData.volumeSeries} />
           </Panel>
         </section>
 
         <section className="dashboard-grid dashboard-grid--bottom">
-          <Panel eyebrow="risk mix" title="Allocation split">
+          <Panel eyebrow="allocation" title="Allocation mix">
             <AllocationDonut data={snapshotData.allocation} />
           </Panel>
 
-          <Panel eyebrow="market tape" title="Top movers">
+          <Panel eyebrow="market activity" title="Active movers">
             <MoversTable rows={snapshotData.movers} />
           </Panel>
         </section>
 
         <section className="dashboard-grid dashboard-grid--tools">
           <Panel
-            eyebrow="request workbench"
-            title="Send debug.echo"
+            eyebrow="request console"
+            title="Execute debug.echo"
             action={
               <button className="app-button" onClick={() => void handleEcho()} type="button">
-                Send request
+                Run request
               </button>
             }
           >
             <label className="composer">
-              <span className="composer__label">params JSON</span>
+              <span className="composer__label">request parameters</span>
               <textarea
                 className="composer__textarea"
                 onChange={(event) => setEchoPayload(event.target.value)}
@@ -190,18 +262,17 @@ function App() {
               />
             </label>
             <pre className="raw-envelope">
-              {echoResponse || 'Press "Send request" to verify the round trip.'}
+              {echoResponse || 'Submit a request to inspect the live response contract.'}
             </pre>
           </Panel>
 
-          <Panel eyebrow="transport" title="Latest websocket envelope">
+          <Panel eyebrow="transport" title="Latest response envelope">
             <pre className="raw-envelope">
-              {latestEnvelope ||
-                'No websocket reply received yet. Start the q gateway and the envelope will appear here.'}
+              {latestEnvelope || 'Awaiting the first gateway response.'}
             </pre>
             <div className="panel-note">
-              <strong>Snapshot mode:</strong>{' '}
-              {snapshot.error ? snapshot.error : 'Using live data when the gateway is reachable.'}
+              <strong>Feed mode:</strong>
+              {snapshot.error ? snapshot.error : 'Live transport active'}
             </div>
           </Panel>
         </section>

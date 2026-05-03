@@ -1,6 +1,6 @@
 # Docs Site
 
-This app is a deployable static documentation site for `kdb-dashboard-library`.
+This app is a deployable static documentation site for `kdb-dashboard-library`, focused on setup, contract, package responsibilities, and operational commands.
 
 ## Run locally
 

@@ -1,156 +1,165 @@
-type FeatureCard = {
+type PackageCard = {
   body: string
   bullets: string[]
+  path: string
   title: string
 }
 
-type UseCaseCard = {
-  outcome: string
+type LinkCard = {
+  links: Array<{ href: string; label: string }>
   title: string
-  utility: string
 }
 
-const featureCards: FeatureCard[] = [
+type StepCard = {
+  body: string
+  snippet: string
+  title: string
+}
+
+const repoUrl = 'https://github.com/Deonatan/kdb-dashboard-library'
+
+const packageCards: PackageCard[] = [
   {
-    title: 'Pure q gateway',
-    body: 'Keep transport and business logic close to your kdb estate instead of adding a second backend stack.',
+    title: 'apps/q-gateway',
+    path: 'apps/q-gateway',
+    body: 'q websocket service that loads endpoint files, parses JSON requests, routes by function name, and can push stream updates.',
     bullets: [
-      'WebSocket request handling in q',
-      'Registry-based endpoint dispatch',
-      'JSON request and response envelopes',
+      'Runtime entry point: `src/main.q`',
+      'Core modules: `src/core/*.q`',
+      'Extension surface: `src/endpoints/*.q`',
     ],
   },
   {
-    title: 'Reusable parsing utilities',
-    body: 'Shared helpers absorb repetitive coercion, defaulting, and response shaping so endpoint authors stay focused.',
+    title: 'packages/react-client',
+    path: 'packages/react-client',
+    body: 'React connection layer for websocket lifecycle, request correlation, request hooks, and stream subscriptions.',
     bullets: [
-      'Consistent JSON parsing helpers',
-      'Response envelope builders',
-      'Convenient params access patterns',
+      '`KdbProvider` and `KdbWebSocketClient`',
+      '`useKdbConnection`, `useKdbRequest`, `useKdbLiveQuery`',
+      '`useKdbStream` for pushed updates',
     ],
   },
   {
-    title: 'React transport layer',
-    body: 'A reconnecting client and live-query hooks remove most of the frontend socket boilerplate.',
+    title: 'packages/protocol',
+    path: 'packages/protocol',
+    body: 'Shared request and response types plus demo fixtures used by the dashboard and docs examples.',
     bullets: [
-      'Request correlation by ID',
-      'Connection state for the UI',
-      'Live query patterns for dashboards',
+      'Request and response envelope types',
+      'Dashboard snapshot fixtures',
+      'Stream payload fixtures',
     ],
   },
   {
-    title: 'Finance-ready UI baseline',
-    body: 'The starter visual language feels familiar to trading and analytics users while staying editable in normal React and CSS.',
+    title: 'packages/finance-ui',
+    path: 'packages/finance-ui',
+    body: 'Reusable dashboard components and theme styles for dense numeric layouts, charts, and tables.',
     bullets: [
-      'Terminal-inspired dark theme',
-      'KPI, chart, and table primitives',
-      'Compact layouts for dense numeric views',
+      'Metric, panel, and status primitives',
+      'Chart and table components',
+      'Shared theme variables and typography',
     ],
+  },
+]
+
+const setupSteps: StepCard[] = [
+  {
+    title: '1. Install workspace dependencies',
+    body: 'Install the frontend workspace packages with pnpm before running any app.',
+    snippet: 'pnpm install',
+  },
+  {
+    title: '2. Start the q gateway',
+    body: 'The startup script resolves `q`, configures `QHOME` and `QLIC`, and launches the websocket gateway.',
+    snippet: 'pnpm dev:gateway',
+  },
+  {
+    title: '3. Start a frontend surface',
+    body: 'Run the example dashboard or this docs app locally against the same workspace packages.',
+    snippet: 'pnpm dev:dashboard\npnpm dev:docs',
   },
 ]
 
 const utilityGroups = [
   {
-    eyebrow: 'Backend utilities',
-    title: 'What q developers reuse',
+    title: 'Backend utilities',
     items: [
-      '`Kdb gateway core`: `.kdb.boot`, `.kdb.ws`, and `.kdb.router`',
-      '`apps/q-gateway/src/core/router.q` for request decoding and dispatch',
-      '`apps/q-gateway/src/core/response.q` for standardized success and error envelopes',
-      '`apps/q-gateway/src/utils/*.q` for parsing, data shaping, and defaults',
-      '`apps/q-gateway/src/endpoints/` as the drop-in extension surface',
+      '`.kdb.registry.register` registers one public function name from an endpoint file.',
+      '`.kdb.util.getOr` reads optional request params safely.',
+      '`.kdb.response.ok` and `.kdb.response.fail` keep the response envelope consistent.',
+      '`.kdb.router.handle` is the main JSON request entry point.',
     ],
   },
   {
-    eyebrow: 'Frontend utilities',
-    title: 'What React developers reuse',
+    title: 'Frontend utilities',
     items: [
-      '`KdbProvider` and `KdbWebSocketClient` for connection lifecycle',
-      '`packages/react-client` for socket lifecycle and request helpers',
-      '`useKdbConnection`, `useKdbRequest`, and `useKdbLiveQuery` for request flows',
-      '`packages/finance-ui` for finance-oriented layout and chart styling',
-      'Shared request and response types through `packages/protocol`',
+      '`KdbProvider` owns the websocket connection lifecycle.',
+      '`useKdbRequest` sends one-off requests and returns the typed response.',
+      '`useKdbLiveQuery` handles request state for query-style panels.',
+      '`useKdbStream` subscribes to pushed stream updates such as `stream.tape`.',
     ],
   },
   {
-    eyebrow: 'Team utilities',
-    title: 'What delivery teams get immediately',
+    title: 'Operations',
     items: [
-      'A starter dashboard to prove the contract quickly',
-      'A monorepo that separates runtime apps from reusable packages',
-      'A docs and use-case baseline for open-source readiness',
-      'A static docs site that can be hosted independently from the app',
+      '`pnpm q:doctor` checks q discovery and license state.',
+      '`pnpm test:q` runs the q smoke test.',
+      '`VITE_KDB_WS_URL` points the dashboard to another websocket server.',
+      '`DOCS_BASE_PATH` builds this site under a repository subpath.',
     ],
   },
 ]
 
-const referenceCards = [
+const referenceCards: LinkCard[] = [
   {
-    title: 'Reference docs',
-    bullets: [
-      'Request and response contract examples',
-      'Endpoint registration pattern',
-      'Architecture and backend notes',
+    title: 'Core docs',
+    links: [
+      { label: 'Getting Started', href: `${repoUrl}/blob/main/docs/getting-started.md` },
+      { label: 'Architecture', href: `${repoUrl}/blob/main/docs/architecture.md` },
+      { label: 'Backend Architecture', href: `${repoUrl}/blob/main/docs/backend/architecture.md` },
+      { label: 'Request / Response Contracts', href: `${repoUrl}/blob/main/docs/request-response-contracts.md` },
     ],
   },
   {
-    title: 'Important scripts',
-    bullets: [
-      '`pnpm dev:gateway` to run the q gateway',
-      '`pnpm dev:dashboard` to run the example dashboard',
-      '`pnpm dev:docs` and `pnpm build:docs` for this static site',
+    title: 'Backend guides',
+    links: [
+      { label: 'Adding Backend Endpoints', href: `${repoUrl}/blob/main/docs/backend/adding-endpoints.md` },
+      { label: 'Endpoint Pattern', href: `${repoUrl}/blob/main/docs/endpoint-pattern.md` },
+      { label: 'Use Cases', href: `${repoUrl}/blob/main/docs/use-cases.md` },
+      { label: 'Roadmap', href: `${repoUrl}/blob/main/docs/roadmap.md` },
     ],
   },
   {
-    title: 'Environment and runtime',
-    bullets: [
-      '`Q_BIN`, `QHOME`, and `QLIC` for q runtime setup',
-      '`VITE_KDB_WS_URL` for frontend socket targeting',
-      '`DOCS_BASE_PATH` for static hosting under a subpath',
+    title: 'Repository',
+    links: [
+      { label: 'Source Repository', href: repoUrl },
+      { label: 'Dashboard Notes', href: `${repoUrl}/blob/main/docs/frontend/README.md` },
+      { label: 'Docs App README', href: `${repoUrl}/blob/main/apps/docs-site/README.md` },
+      { label: 'Contributing', href: `${repoUrl}/blob/main/CONTRIBUTING.md` },
     ],
   },
 ]
 
-const workflowSteps = [
-  {
-    step: '1. Start the gateway',
-    detail: 'Run q with the provided startup script so the library can accept JSON over WebSocket.',
-    snippet: 'pnpm dev:gateway',
-  },
-  {
-    step: '2. Add an endpoint file',
-    detail: 'Drop one q file into the endpoint folder and register a public function name.',
-    snippet: `.kdb.registry.register[\n  \`desk.snapshot;\n  {[params]\n    desk:.kdb.util.getOr[params; \`desk; "macro"];\n    \`desk\`status!(desk; "ok")\n  };\n  \`name\`description\`group!(\n    "desk.snapshot";\n    "Example desk snapshot endpoint.";\n    "desk"\n  )\n];`,
-  },
-  {
-    step: '3. Consume it in React',
-    detail: 'Call the endpoint through the shared client and bind the result to a dashboard panel.',
-    snippet: `const snapshot = useKdbLiveQuery(\n  'desk.snapshot',\n  { desk: 'macro' },\n  { enabled: status === 'open' },\n)`,
-  },
-]
+const endpointExample = `.kdb.registry.register[
+  \`desk.snapshot;
+  {[params]
+    desk:.kdb.util.getOr[params; \`desk; "macro"];
+    asOf:string .z.p;
+    \`desk\`status\`asOf!(desk; "ok"; asOf)
+  };
+  \`name\`description\`group!(
+    "desk.snapshot";
+    "Returns a desk status payload.";
+    "desk"
+  )
+];`
 
-const useCases: UseCaseCard[] = [
-  {
-    title: 'Intraday desk risk cockpit',
-    utility: 'PnL, exposure, concentration, and movers in one screen',
-    outcome: 'Best first deployment for a team with existing kdb analytics.',
-  },
-  {
-    title: 'Execution quality monitor',
-    utility: 'Venue mix, slippage, latency, and outlier fills',
-    outcome: 'Pairs well with event-heavy intraday q aggregations.',
-  },
-  {
-    title: 'Liquidity and inventory board',
-    utility: 'Inventory buckets, turnover, stale positions, and concentration',
-    outcome: 'Useful for market-making, treasury, and fixed-income desks.',
-  },
-  {
-    title: 'Market data health console',
-    utility: 'Feed freshness, anomalies, and symbol-level support views',
-    outcome: 'Shows that the same contract supports ops and business dashboards.',
-  },
-]
+const reactExample = `const { status } = useKdbConnection()
+
+const snapshot = useKdbLiveQuery(
+  'desk.snapshot',
+  { desk: 'macro' },
+  { enabled: status === 'open' },
+)`
 
 const requestExample = `{
   "id": "req-20260503-001",
@@ -175,11 +184,10 @@ const responseExample = `{
   "ts": "2026.05.03D01:58:00.000000000"
 }`
 
-const deployExample = `pnpm dev:docs
+const operationsExample = `pnpm q:doctor
+pnpm test:q
 pnpm build:docs
-pnpm preview:docs
 
-# if you deploy under a repo subpath
 DOCS_BASE_PATH=/kdb-dashboard-library/ pnpm build:docs`
 
 export default function App() {
@@ -195,80 +203,132 @@ export default function App() {
         </a>
         <nav className="topbar__nav">
           <a href="#overview">Overview</a>
-          <a href="#utilities">Utilities</a>
-          <a href="#features">Features</a>
-          <a href="#how-to-use">How to use</a>
-          <a href="#reference">Reference</a>
+          <a href="#setup">Setup</a>
+          <a href="#contract">Contract</a>
+          <a href="#endpoint-pattern">Endpoint Pattern</a>
+          <a href="#runtime-packages">Runtime Packages</a>
+          <a href="#operations">Operations</a>
         </nav>
       </header>
 
       <main className="page-shell" id="top">
         <section className="hero" id="overview">
           <div className="hero__copy">
-            <p className="eyebrow">Static documentation site</p>
-            <h1>
-              A clean React front end for <span>q-powered dashboards</span>.
-            </h1>
+            <p className="eyebrow">Overview</p>
+            <h1>Utilities for q-backed React dashboards.</h1>
             <p className="hero__body">
-              `kdb-dashboard-library` gives teams a practical bridge between
-              `kdb+/q` and React: a pure q gateway, a reusable client layer,
-              finance-friendly UI primitives, and a simple endpoint extension
-              model that keeps domain logic where it belongs.
+              This repo contains a q websocket gateway, a React client layer,
+              shared protocol types, and dashboard UI primitives. The main
+              workflow is: start the gateway, add an endpoint file, then
+              consume that endpoint from React.
             </p>
+            <ul className="hero-list">
+              <li>Backend runtime in pure q.</li>
+              <li>JSON request and response envelopes over WebSocket.</li>
+              <li>Endpoint files under `apps/q-gateway/src/endpoints`.</li>
+              <li>React hooks for requests, live queries, and streams.</li>
+            </ul>
             <div className="hero__actions">
-              <a className="button button--primary" href="#how-to-use">
-                Start with the workflow
+              <a className="button button--primary" href="#setup">
+                Open setup
               </a>
-              <a className="button button--secondary" href="#utilities">
-                Explore utilities
+              <a className="button button--secondary" href="#endpoint-pattern">
+                View endpoint pattern
               </a>
             </div>
             <div className="hero__badges">
-              <span className="badge">Pure q backend</span>
-              <span className="badge">JSON over WebSocket</span>
-              <span className="badge">React workspace packages</span>
-              <span className="badge">Static docs build</span>
+              <span className="badge">q gateway</span>
+              <span className="badge">React client</span>
+              <span className="badge">Shared protocol</span>
+              <span className="badge">Static docs</span>
             </div>
           </div>
 
           <div className="hero__panel">
             <div className="terminal-card">
               <div className="terminal-card__header">
-                <span>starter-status</span>
-                <span>docs surface</span>
+                <span>start-here</span>
+                <span>local workflow</span>
               </div>
               <div className="terminal-card__body">
                 <div className="metric-strip">
-                  <Metric label="Gateway" value="q runtime" />
-                  <Metric label="Client" value="live queries" />
-                  <Metric label="UI" value="finance-ready" />
+                  <Metric label="Backend" value="q" />
+                  <Metric label="Transport" value="WebSocket" />
+                  <Metric label="Client" value="React hooks" />
                 </div>
                 <div className="signal-grid">
-                  <Signal title="Backend">
-                    registry dispatch, JSON parsing, reusable helpers
-                  </Signal>
-                  <Signal title="Frontend">
-                    reconnecting socket, typed envelopes, dense dashboards
-                  </Signal>
-                  <Signal title="Docs">
-                    static build, feature map, deploy notes
-                  </Signal>
+                  <Signal title="Run">`pnpm dev:gateway`</Signal>
+                  <Signal title="Extend">Add one file under `src/endpoints`.</Signal>
+                  <Signal title="Consume">Use `useKdbLiveQuery` or `useKdbStream`.</Signal>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="section" id="features">
+        <section className="section" id="setup">
           <SectionHeading
-            eyebrow="Feature surface"
-            title="What the library gives you immediately"
-            body="This repo is most useful when you want a reusable dashboard foundation rather than a one-off demo."
+            eyebrow="Setup"
+            title="Local setup and first run"
+            body="Start with the standard workspace install, then run the q gateway and a frontend surface."
+          />
+          <div className="workflow-grid">
+            {setupSteps.map((item) => (
+              <article className="workflow-card" key={item.title}>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                <pre>
+                  <code>{item.snippet}</code>
+                </pre>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section" id="contract">
+          <SectionHeading
+            eyebrow="Contract"
+            title="Request and response shape"
+            body="The transport contract is intentionally small: each request sends `id`, `func`, and optional `params`, and each response returns the same `id` with either `data` or `error`."
+          />
+          <div className="code-grid">
+            <CodeSurface title="Request example" code={requestExample} />
+            <CodeSurface title="Success response example" code={responseExample} />
+          </div>
+        </section>
+
+        <section className="section" id="endpoint-pattern">
+          <SectionHeading
+            eyebrow="Endpoint pattern"
+            title="Add one q endpoint file"
+            body="Endpoints are normal `.q` files loaded at startup. Each file usually registers one public function name and returns a q value that serializes cleanly to JSON."
+          />
+          <div className="section--split">
+            <article className="surface-card">
+              <h3>Handler conventions</h3>
+              <ul className="tick-list">
+                <li>Create the file under `apps/q-gateway/src/endpoints`.</li>
+                <li>Accept parsed `params` in the handler function.</li>
+                <li>Use helpers such as `.kdb.util.getOr` for optional inputs.</li>
+                <li>Return a q dictionary, list, or table that `.j.j` can serialize.</li>
+                <li>Register `name`, `description`, and `group` metadata.</li>
+              </ul>
+            </article>
+            <CodeSurface title="Endpoint example" code={endpointExample} />
+          </div>
+        </section>
+
+        <section className="section" id="runtime-packages">
+          <SectionHeading
+            eyebrow="Runtime packages"
+            title="What each package does"
+            body="The repo is split between the q runtime app, the example dashboard, and the reusable frontend packages."
           />
           <div className="feature-grid">
-            {featureCards.map((card) => (
+            {packageCards.map((card) => (
               <article className="surface-card" key={card.title}>
                 <h3>{card.title}</h3>
+                <p className="card-path">{card.path}</p>
                 <p>{card.body}</p>
                 <ul className="tick-list">
                   {card.bullets.map((bullet) => (
@@ -280,16 +340,15 @@ export default function App() {
           </div>
         </section>
 
-        <section className="section" id="utilities">
+        <section className="section">
           <SectionHeading
             eyebrow="Utilities"
-            title="The reusable pieces teams actually build on"
-            body="The point of the library is not just transport. It is to reduce repeated setup across q, React, and delivery workflows."
+            title="Common utilities and touchpoints"
+            body="These are the backend functions, frontend hooks, and operational commands most teams reuse first."
           />
           <div className="utility-grid">
             {utilityGroups.map((group) => (
               <article className="utility-card" key={group.title}>
-                <p className="eyebrow">{group.eyebrow}</p>
                 <h3>{group.title}</h3>
                 <ul className="utility-list">
                   {group.items.map((item) => (
@@ -303,107 +362,45 @@ export default function App() {
 
         <section className="section">
           <SectionHeading
-            eyebrow="Contract"
-            title="The payload shape stays boring on purpose"
-            body="The JSON envelope is intentionally small and predictable so teams can extend endpoints without rethinking the transport every time."
+            eyebrow="React usage"
+            title="Consume an endpoint from React"
+            body="The shared client packages handle connection state, request IDs, response envelopes, and stream subscriptions."
           />
-          <div className="code-grid">
-            <CodeSurface title="Request" code={requestExample} />
-            <CodeSurface title="Response" code={responseExample} />
+          <div className="section--split">
+            <CodeSurface title="React query example" code={reactExample} />
+            <article className="surface-card">
+              <h3>When to use which hook</h3>
+              <ul className="tick-list">
+                <li>Use `useKdbRequest` for explicit button-driven requests.</li>
+                <li>Use `useKdbLiveQuery` for query-style panels that refresh from the gateway.</li>
+                <li>Use `useKdbStream` for server-pushed updates such as `stream.tape`.</li>
+                <li>Use `useKdbConnection` when the UI needs websocket status or the raw client instance.</li>
+              </ul>
+            </article>
           </div>
         </section>
 
-        <section className="section" id="how-to-use">
+        <section className="section" id="operations">
           <SectionHeading
-            eyebrow="How to use"
-            title="A practical path from starter kit to real desk workflow"
-            body="The normal flow is: start the gateway, add one endpoint file, then consume it from React through the shared client."
+            eyebrow="Operations"
+            title="Diagnostics, build, and reference links"
+            body="These commands and links cover q runtime discovery, smoke testing, docs builds, and the deeper markdown docs in the repository."
           />
-          <div className="workflow-grid">
-            {workflowSteps.map((item) => (
-              <article className="workflow-card" key={item.step}>
-                <h3>{item.step}</h3>
-                <p>{item.detail}</p>
-                <pre>
-                  <code>{item.snippet}</code>
-                </pre>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="section" id="reference">
-          <SectionHeading
-            eyebrow="Reference"
-            title="The important reference surface in one place"
-            body="Use the deeper markdown docs for contracts and architecture, but keep these runtime and package touchpoints close when onboarding new contributors."
-          />
-          <div className="utility-grid">
-            {referenceCards.map((card) => (
-              <article className="utility-card" key={card.title}>
-                <h3>{card.title}</h3>
-                <ul className="utility-list">
-                  {card.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="section">
-          <SectionHeading
-            eyebrow="Use cases"
-            title="Where this library fits especially well"
-            body="The strongest first deployment is an intraday desk risk cockpit, but the same pattern extends to execution, inventory, and surveillance dashboards."
-          />
-          <div className="use-case-grid">
-            {useCases.map((card) => (
-              <article className="surface-card surface-card--accent" key={card.title}>
-                <h3>{card.title}</h3>
-                <p className="use-case-card__utility">{card.utility}</p>
-                <p>{card.outcome}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="section section--split" id="deploy">
-          <div>
-            <SectionHeading
-              eyebrow="Deploy"
-              title="This documentation page ships as a static Vite app"
-              body="Build output lands in `apps/docs-site/dist/`, so you can host it on GitHub Pages, Netlify, Vercel static hosting, S3, or any CDN-backed web server."
-            />
-            <ul className="tick-list">
-              <li>Run the site locally with `pnpm dev:docs`.</li>
-              <li>Build static assets with `pnpm build:docs`.</li>
-              <li>Preview the built output with `pnpm preview:docs`.</li>
-              <li>Set `DOCS_BASE_PATH` when hosting under a repository subpath.</li>
-            </ul>
-          </div>
-          <CodeSurface title="Static deploy commands" code={deployExample} />
-        </section>
-
-        <section className="section section--cta">
-          <div className="cta-card">
-            <p className="eyebrow">Next move</p>
-            <h2>Replace the demo snapshot with one real desk endpoint.</h2>
-            <p>
-              That is usually the fastest way to prove the contract, the
-              visuals, and the extension pattern with stakeholders.
-            </p>
-            <div className="hero__actions">
-              <a className="button button--primary" href="https://github.com/Deonatan/kdb-dashboard-library">
-                Open the repository
-              </a>
-              <a
-                className="button button--secondary"
-                href="https://github.com/Deonatan/kdb-dashboard-library/blob/main/docs/use-cases.md"
-              >
-                Read detailed use cases
-              </a>
+          <div className="section--split">
+            <CodeSurface title="Common commands" code={operationsExample} />
+            <div className="utility-grid utility-grid--stack">
+              {referenceCards.map((card) => (
+                <article className="utility-card" key={card.title}>
+                  <h3>{card.title}</h3>
+                  <ul className="link-list">
+                    {card.links.map((link) => (
+                      <li key={link.href}>
+                        <a href={link.href}>{link.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
             </div>
           </div>
         </section>

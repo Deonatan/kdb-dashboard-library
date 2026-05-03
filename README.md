@@ -1,44 +1,15 @@
 # kdb-dashboard-library
 
-`kdb-dashboard-library` is a private-first, open-source-ready starter kit for teams that want a practical bridge between `kdb+/q` and React dashboards.
+Utilities for building React dashboards on top of `kdb+/q`.
 
-The repo is built around a simple idea:
+This repo contains:
 
-- keep the backend in pure `q`
-- expose dashboard-friendly functions over WebSocket
-- keep the frontend contract boring and predictable
-- give users a clean place to keep adding new endpoints without rebuilding the plumbing every time
-
-## What Is In The Repo
-
-The monorepo is split into runnable apps plus reusable frontend packages:
-
-- `apps/docs-site`: deployable static documentation site for features, utilities, and usage
-- `apps/q-gateway`: pure `q` websocket service, routing, reusable helpers, sample endpoints
-- `apps/dashboard`: Vite + React dashboard app that talks to the gateway over WebSocket
-- `packages/protocol`: shared TypeScript request/response types and demo fixtures
-- `packages/react-client`: reusable React connection layer and request hooks
-- `packages/finance-ui`: Bloomberg-inspired theme and finance-focused visualization components
-
-## Architecture At A Glance
-
-```mermaid
-flowchart LR
-    A["React Dashboard"] -->|JSON over WebSocket| B["q WebSocket Gateway"]
-    B --> C["Request Parser + JSON Helpers"]
-    C --> D["Function Registry"]
-    D --> E["Endpoint Files"]
-    E --> F["Shared q Utils"]
-    E --> G["kdb Tables / Analytics"]
-    G --> E
-    F --> E
-    A --> I["react-client"]
-    A --> J["finance-ui"]
-    I --> A
-    J --> A
-    E --> H["Response Envelope"]
-    H -->|JSON over WebSocket| A
-```
+- a q websocket gateway for JSON request and response routing
+- an endpoint registration pattern under `apps/q-gateway/src/endpoints`
+- shared TypeScript protocol types in `packages/protocol`
+- a React connection layer and hooks in `packages/react-client`
+- dashboard components and theme styles in `packages/finance-ui`
+- an example dashboard app and a deployable static docs site
 
 ## Repository Layout
 
@@ -59,9 +30,26 @@ kdb-dashboard-library/
 └── README.md
 ```
 
+## Runtime Layout
+
+```mermaid
+flowchart LR
+    A["React app"] -->|JSON over WebSocket| B["q gateway"]
+    B --> C["router.q"]
+    C --> D["registry.q"]
+    D --> E["endpoint files"]
+    E --> F["q utils"]
+    E --> G["kdb data / analytics"]
+    B --> H["response.q"]
+    H -->|JSON over WebSocket| A
+    A --> I["react-client"]
+    A --> J["protocol"]
+    A --> K["finance-ui"]
+```
+
 ## Quick Start
 
-### 1. Install frontend dependencies
+### 1. Install workspace dependencies
 
 ```bash
 pnpm install
@@ -69,33 +57,33 @@ pnpm install
 
 ### 2. Start the q gateway
 
-`q` is not bundled with this repository, so install kdb+/q separately.
-
-The gateway startup script will try the following automatically:
+The gateway startup script looks for `q` in this order:
 
 - `Q_BIN`
-- `q` on your `PATH`
-- `~/.kx/bin/q` for KDB-X Community Edition
+- `q` on `PATH`
+- `~/.kx/bin/q`
 - `~/q/m64/q`
 - `~/q/l64/q`
 
-If you want to point at a specific binary, override it inline:
+If you need to point to a specific binary:
 
 ```bash
 Q_BIN=/absolute/path/to/q pnpm dev:gateway
 ```
 
-If startup fails, inspect the detected binary and license state with:
+If startup fails, inspect the detected runtime and license:
 
 ```bash
 pnpm q:doctor
 ```
 
+Run the gateway:
+
 ```bash
 pnpm dev:gateway
 ```
 
-By default the gateway listens on `ws://localhost:5050`.
+Default websocket URL: `ws://localhost:5050`
 
 ### 3. Start the dashboard
 
@@ -103,23 +91,39 @@ By default the gateway listens on `ws://localhost:5050`.
 pnpm dev:dashboard
 ```
 
-### 4. Start the static docs site
+If you want a different gateway URL, copy [`apps/dashboard/.env.example`](apps/dashboard/.env.example) to `apps/dashboard/.env` and set `VITE_KDB_WS_URL`.
+
+### 4. Start the docs site
 
 ```bash
 pnpm dev:docs
 ```
 
-To build deployable static documentation assets:
+Build the static docs output:
 
 ```bash
 pnpm build:docs
 ```
 
-If you want a different gateway URL, copy [`apps/dashboard/.env.example`](apps/dashboard/.env.example) to `apps/dashboard/.env` and override `VITE_KDB_WS_URL`.
+## Core Runtime Surfaces
 
-## JSON Request / Response Contract
+### q gateway
 
-The starter contract is intentionally small and predictable.
+- `apps/q-gateway/src/main.q`: process entry point
+- `apps/q-gateway/src/load.q`: shared loader for utils and core modules
+- `apps/q-gateway/src/core/bootstrap.q`: startup flow and port binding
+- `apps/q-gateway/src/core/router.q`: request parsing and dispatch
+- `apps/q-gateway/src/core/ws.q`: websocket callbacks and transport
+- `apps/q-gateway/src/core/stream.q`: sample pushed stream support
+
+### Frontend packages
+
+- `packages/react-client`: websocket client, provider, and hooks
+- `packages/protocol`: shared request and response types
+- `packages/finance-ui`: reusable dashboard components and theme styles
+- `apps/dashboard`: example React dashboard that consumes the gateway
+
+## Request / Response Contract
 
 ### Request
 
@@ -133,7 +137,7 @@ The starter contract is intentionally small and predictable.
 }
 ```
 
-### Success Response
+### Success response
 
 ```json
 {
@@ -152,7 +156,7 @@ The starter contract is intentionally small and predictable.
 }
 ```
 
-### Error Response
+### Error response
 
 ```json
 {
@@ -171,17 +175,9 @@ The starter contract is intentionally small and predictable.
 
 More detail lives in [docs/request-response-contracts.md](docs/request-response-contracts.md).
 
-## Endpoint Extension Pattern
+## Add A Backend Endpoint
 
-Adding a new dashboard capability should mostly mean adding one new endpoint file and registering it.
-
-Recommended pattern in `apps/q-gateway/src/endpoints/`:
-
-1. Create a new `.q` file under `apps/q-gateway/src/endpoints/`.
-2. Expose a single handler that accepts parsed `params`.
-3. Register the function through `.kdb.registry.register`.
-4. Reuse shared helpers from `apps/q-gateway/src/utils/`.
-5. Return a q dictionary or table that `.j.j` can serialize cleanly.
+Create a `.q` file under `apps/q-gateway/src/endpoints/` and register one public function name.
 
 Example:
 
@@ -204,36 +200,49 @@ Example:
 ];
 ```
 
-Full guidance is in [docs/endpoint-pattern.md](docs/endpoint-pattern.md).
+Useful helpers:
 
-## Why The UI Feels Familiar To Finance Users
+- `.kdb.util.getOr` for optional params
+- `.kdb.response.ok` and `.kdb.response.fail` for standardized envelopes
+- `.kdb.registry.register` for public endpoint registration
 
-The default dashboard theme leans into:
+Full guidance is in [docs/backend/adding-endpoints.md](docs/backend/adding-endpoints.md) and [docs/endpoint-pattern.md](docs/endpoint-pattern.md).
 
-- dense information layout
-- charcoal surfaces
-- amber, green, and red signal colors
-- monospaced numeric emphasis
-- reusable finance-focused charts and tables
+## Consume An Endpoint In React
 
-It is inspired by tools finance users already feel comfortable with, while staying fully editable in normal React/CSS.
+```tsx
+const { status } = useKdbConnection()
 
-## Best First Use Case
+const snapshot = useKdbLiveQuery(
+  'trade.snapshot',
+  { symbol: 'AAPL' },
+  { enabled: status === 'open' },
+)
+```
 
-The best first deployment for this starter is an **intraday trading desk risk cockpit**:
+Main hooks:
 
-- top-line KPIs for PnL, gross, net, VaR, and utilization
-- ranked movers and contributors
-- time-series panels for intraday drift
-- one or two drill-down endpoints for desk-specific workflows
+- `useKdbConnection` for connection state and direct client access
+- `useKdbRequest` for explicit request/response flows
+- `useKdbLiveQuery` for query-style components
+- `useKdbStream` for pushed stream updates
 
-That use case fits the repo especially well because it maps directly to:
+## Common Commands
 
-- `q` for shaping exposures, rankings, and time series
-- WebSocket requests for fast dashboard refreshes
-- the included finance-oriented React component set
+```bash
+pnpm dev:gateway
+pnpm dev:dashboard
+pnpm dev:docs
+pnpm q:doctor
+pnpm test:q
+pnpm build:docs
+```
 
-See [docs/use-cases.md](docs/use-cases.md) for the flagship workflow plus more sample patterns.
+If the docs site is deployed under a repo subpath, build with:
+
+```bash
+DOCS_BASE_PATH=/kdb-dashboard-library/ pnpm build:docs
+```
 
 ## Documentation Map
 
@@ -244,15 +253,6 @@ See [docs/use-cases.md](docs/use-cases.md) for the flagship workflow plus more s
 - [Getting Started](docs/getting-started.md)
 - [Static Docs App](apps/docs-site/README.md)
 - [Use Cases](docs/use-cases.md)
-- [Endpoint Extension Pattern](docs/endpoint-pattern.md)
 - [Request / Response Contracts](docs/request-response-contracts.md)
 - [Roadmap](docs/roadmap.md)
 - [Contributing](CONTRIBUTING.md)
-
-## Intended Users
-
-- market data and trading teams with an existing `kdb` estate
-- internal dashboard builders who want React without introducing a heavy non-`q` backend
-- teams open-sourcing or standardizing a reusable `kdb` dashboard baseline
-
-If you want to help shape that direction, start with [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -9,8 +9,8 @@
 html {
   scroll-behavior: smooth;
   background:
-    radial-gradient(circle at top left, rgba(255, 176, 0, 0.2), transparent 28%),
-    radial-gradient(circle at 80% 0%, rgba(68, 183, 255, 0.18), transparent 24%),
+    radial-gradient(circle at top left, rgba(255, 176, 0, 0.1), transparent 26%),
+    radial-gradient(circle at 82% 0%, rgba(68, 183, 255, 0.08), transparent 22%),
     #05080b;
 }
 
@@ -18,9 +18,9 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgba(5, 8, 11, 0.86), rgba(5, 8, 11, 0.98)),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    linear-gradient(180deg, rgba(5, 8, 11, 0.92), rgba(5, 8, 11, 0.98)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: auto, 24px 24px, 24px 24px;
   color: var(--fx-ink);
   font-family: var(--fx-font-sans);
@@ -54,24 +54,24 @@ pre {
 
 .docs-site__glow {
   position: fixed;
-  width: 28rem;
-  height: 28rem;
+  width: 24rem;
+  height: 24rem;
   border-radius: 999px;
-  filter: blur(90px);
-  opacity: 0.32;
+  filter: blur(110px);
+  opacity: 0.14;
   pointer-events: none;
 }
 
 .docs-site__glow--left {
-  top: 5rem;
+  top: 4rem;
   left: -10rem;
-  background: rgba(255, 176, 0, 0.26);
+  background: rgba(255, 176, 0, 0.25);
 }
 
 .docs-site__glow--right {
-  top: 18rem;
+  top: 20rem;
   right: -10rem;
-  background: rgba(68, 183, 255, 0.22);
+  background: rgba(68, 183, 255, 0.18);
 }
 
 .topbar {
@@ -82,9 +82,9 @@ pre {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 1.5rem;
+  padding: 0.95rem 1.5rem;
   backdrop-filter: blur(18px);
-  background: rgba(5, 8, 11, 0.72);
+  background: rgba(5, 8, 11, 0.86);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -95,15 +95,15 @@ pre {
   font-family: var(--fx-font-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
 }
 
 .brand__led {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 0.65rem;
+  height: 0.65rem;
   border-radius: 999px;
   background: linear-gradient(180deg, #ffb000, #ff7a00);
-  box-shadow: 0 0 20px rgba(255, 176, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 176, 0, 0.4);
 }
 
 .topbar__nav {
@@ -111,27 +111,28 @@ pre {
   gap: 1rem;
   flex-wrap: wrap;
   color: var(--fx-muted);
-  font-size: 0.94rem;
+  font-size: 0.92rem;
 }
 
-.topbar__nav a:hover {
-  color: var(--fx-ink);
+.topbar__nav a:hover,
+.link-list a:hover {
+  color: #ffd888;
 }
 
 .page-shell {
   position: relative;
   z-index: 1;
-  width: min(1180px, calc(100% - 2rem));
+  width: min(1160px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 2rem 0 5rem;
+  padding: 2rem 0 4rem;
 }
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 1.25rem;
   align-items: stretch;
-  padding: 2rem 0 1.5rem;
+  padding: 1.75rem 0 1rem;
 }
 
 .hero__copy,
@@ -139,46 +140,47 @@ pre {
 .surface-card,
 .utility-card,
 .workflow-card,
-.code-surface,
-.cta-card {
+.code-surface {
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(10, 17, 22, 0.92), rgba(7, 12, 16, 0.98));
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+  background: rgba(9, 14, 18, 0.94);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
+}
+
+.hero__copy,
+.hero__panel,
+.surface-card,
+.utility-card,
+.workflow-card,
+.code-surface {
+  border-radius: 1rem;
 }
 
 .hero__copy {
-  border-radius: 2rem;
-  padding: 2rem;
+  padding: 1.6rem;
 }
 
 .hero__panel {
-  border-radius: 2rem;
-  padding: 1rem;
+  padding: 0.9rem;
 }
 
 .eyebrow {
-  margin: 0 0 0.7rem;
+  margin: 0 0 0.65rem;
   color: var(--fx-muted);
   font-family: var(--fx-font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.16em;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .hero h1,
-.section-heading h2,
-.cta-card h2 {
+.section-heading h2 {
   margin: 0;
-  line-height: 1.02;
+  line-height: 1.04;
 }
 
 .hero h1 {
-  font-size: clamp(2.7rem, 7vw, 5.2rem);
-  max-width: 10ch;
-}
-
-.hero h1 span {
-  color: var(--fx-accent);
+  font-size: clamp(2.35rem, 6vw, 4.2rem);
+  max-width: 12ch;
 }
 
 .hero__body,
@@ -186,36 +188,80 @@ pre {
 .surface-card p,
 .workflow-card p,
 .utility-card p,
-.cta-card p,
 .signal-card p {
   color: var(--fx-muted);
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
 .hero__body {
   margin: 1rem 0 0;
-  max-width: 65ch;
-  font-size: 1.02rem;
+  max-width: 64ch;
+  font-size: 1rem;
+}
+
+.hero-list,
+.tick-list,
+.utility-list,
+.link-list {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.hero-list li,
+.tick-list li,
+.utility-list li {
+  position: relative;
+  padding-left: 1rem;
+  line-height: 1.65;
+}
+
+.hero-list li {
+  color: var(--fx-muted);
+}
+
+.hero-list li::before,
+.tick-list li::before,
+.utility-list li::before {
+  content: '';
+  position: absolute;
+  top: 0.58rem;
+  left: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffb000, #ff7a00);
+}
+
+.tick-list li + li,
+.utility-list li + li,
+.link-list li + li {
+  margin-top: 0.5rem;
 }
 
 .hero__actions {
   display: flex;
-  gap: 0.9rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
 }
 
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.9rem;
-  padding: 0.85rem 1.2rem;
-  border-radius: 999px;
+  min-height: 2.8rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.55rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   font-family: var(--fx-font-mono);
-  font-size: 0.84rem;
-  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -231,31 +277,29 @@ pre {
 
 .hero__badges {
   display: flex;
-  gap: 0.7rem;
+  gap: 0.65rem;
   flex-wrap: wrap;
-  margin-top: 1.4rem;
+  margin-top: 1.2rem;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 999px;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.025);
   color: var(--fx-muted);
   font-family: var(--fx-font-mono);
-  font-size: 0.77rem;
+  font-size: 0.76rem;
 }
 
 .terminal-card {
   height: 100%;
-  border-radius: 1.4rem;
+  border-radius: 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(11, 18, 24, 0.95), rgba(6, 11, 15, 0.98));
+  background: rgba(4, 9, 12, 0.9);
 }
 
 .terminal-card__header,
@@ -263,17 +307,17 @@ pre {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.85rem 1rem;
+  padding: 0.8rem 0.95rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--fx-muted);
   font-family: var(--fx-font-mono);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .terminal-card__body {
-  padding: 1rem;
+  padding: 0.95rem;
 }
 
 .metric-strip {
@@ -284,9 +328,9 @@ pre {
 
 .metric-chip,
 .signal-card {
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .metric-chip {
@@ -298,25 +342,25 @@ pre {
   display: block;
   color: var(--fx-muted);
   font-family: var(--fx-font-mono);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .metric-chip strong {
   display: block;
-  margin-top: 0.55rem;
-  font-size: 1.05rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
 }
 
 .signal-grid {
   display: grid;
-  gap: 0.8rem;
-  margin-top: 0.8rem;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
 }
 
 .signal-card {
-  padding: 0.95rem;
+  padding: 0.9rem;
 }
 
 .signal-card p {
@@ -324,32 +368,32 @@ pre {
 }
 
 .section {
-  padding: 3rem 0 0;
+  padding: 2.5rem 0 0;
 }
 
 .section-heading {
   max-width: 52rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.1rem;
 }
 
 .section-heading h2 {
-  font-size: clamp(1.85rem, 4vw, 3.2rem);
+  font-size: clamp(1.7rem, 3vw, 2.75rem);
 }
 
 .section-heading p {
-  margin: 0.9rem 0 0;
+  margin: 0.75rem 0 0;
 }
 
 .feature-grid,
 .utility-grid,
 .workflow-grid,
-.use-case-grid,
 .code-grid {
   display: grid;
   gap: 1rem;
 }
 
-.feature-grid {
+.feature-grid,
+.code-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -361,84 +405,29 @@ pre {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.use-case-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.code-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.surface-card,
-.utility-card,
-.workflow-card,
-.code-surface,
-.cta-card {
-  border-radius: 1.5rem;
-}
-
 .surface-card,
 .utility-card,
 .workflow-card {
-  padding: 1.2rem 1.2rem 1.3rem;
+  padding: 1.15rem 1.15rem 1.2rem;
 }
 
 .surface-card h3,
 .utility-card h3,
 .workflow-card h3 {
   margin: 0;
-  font-size: 1.12rem;
+  font-size: 1.06rem;
 }
 
 .surface-card p,
 .utility-card p,
 .workflow-card p {
-  margin: 0.75rem 0 0;
+  margin: 0.7rem 0 0;
 }
 
-.surface-card--accent {
-  position: relative;
-}
-
-.surface-card--accent::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  height: 3px;
-  border-radius: 1.5rem 1.5rem 0 0;
-  background: linear-gradient(90deg, #ffb000, #44b7ff, #2ce6b8);
-}
-
-.tick-list,
-.utility-list {
-  margin: 1rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.tick-list li,
-.utility-list li {
-  position: relative;
-  padding-left: 1.2rem;
-  color: var(--fx-ink);
-  line-height: 1.65;
-}
-
-.tick-list li + li,
-.utility-list li + li {
-  margin-top: 0.55rem;
-}
-
-.tick-list li::before,
-.utility-list li::before {
-  content: '';
-  position: absolute;
-  top: 0.58rem;
-  left: 0;
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ffb000, #ff7a00);
+.card-path {
+  color: #ffd888;
+  font-family: var(--fx-font-mono);
+  font-size: 0.78rem;
 }
 
 .utility-card {
@@ -446,8 +435,20 @@ pre {
 }
 
 .utility-list code,
-.tick-list code {
+.tick-list code,
+.signal-card code,
+.hero-list code {
   color: #ffd888;
+}
+
+.link-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.link-list a {
+  color: var(--fx-ink);
+  line-height: 1.6;
 }
 
 .code-surface {
@@ -459,15 +460,15 @@ pre {
   margin: 0;
   overflow: auto;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(4, 9, 12, 0.9);
+  background: rgba(4, 9, 12, 0.94);
 }
 
 .code-surface code,
 .workflow-card code {
   display: block;
-  padding: 1rem;
+  padding: 0.95rem 1rem;
   color: #f4e7b0;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   line-height: 1.65;
   white-space: pre;
 }
@@ -481,31 +482,15 @@ pre {
   padding-right: 0.4rem;
 }
 
-.use-case-card__utility {
-  color: var(--fx-ink);
-  font-weight: 600;
-}
-
 .section--split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.95fr);
   gap: 1rem;
   align-items: start;
 }
 
-.section--cta {
-  padding-bottom: 1rem;
-}
-
-.cta-card {
-  padding: 1.6rem;
-  background:
-    linear-gradient(135deg, rgba(255, 176, 0, 0.14), rgba(68, 183, 255, 0.08)),
-    linear-gradient(180deg, rgba(10, 17, 22, 0.92), rgba(7, 12, 16, 0.98));
-}
-
-.cta-card p {
-  max-width: 60ch;
+.utility-grid--stack {
+  grid-template-columns: 1fr;
 }
 
 @media (max-width: 1100px) {
@@ -517,7 +502,6 @@ pre {
   }
 
   .feature-grid,
-  .use-case-grid,
   .code-grid {
     grid-template-columns: 1fr;
   }
@@ -530,7 +514,7 @@ pre {
   }
 
   .page-shell {
-    width: min(100% - 1rem, 1180px);
+    width: min(100% - 1rem, 1160px);
   }
 
   .hero__copy,
@@ -538,14 +522,12 @@ pre {
   .surface-card,
   .utility-card,
   .workflow-card,
-  .code-surface,
-  .cta-card {
-    border-radius: 1.2rem;
+  .code-surface {
+    border-radius: 0.9rem;
   }
 
-  .hero__copy,
-  .cta-card {
-    padding: 1.25rem;
+  .hero__copy {
+    padding: 1.2rem;
   }
 
   .hero {

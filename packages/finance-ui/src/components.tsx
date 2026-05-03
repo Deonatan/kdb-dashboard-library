@@ -3,6 +3,7 @@ import type {
   DashboardMetric,
   MoverRow,
   PricePoint,
+  StreamTapeTick,
   VolumePoint,
 } from '@kdb-dashboard-library/protocol'
 import type { ReactNode } from 'react'
@@ -253,6 +254,45 @@ export function MoversTable({ rows }: { rows: MoverRow[] }) {
                 </td>
                 <td className={positive ? 'positive' : 'negative'}>
                   {formatSigned(row.pct)}%
+                </td>
+                <td>{row.volume.toFixed(1)}M</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+export function StreamTapeTable({
+  rows,
+}: {
+  rows: StreamTapeTick[]
+}) {
+  return (
+    <div className="table-shell">
+      <table className="stream-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Symbol</th>
+            <th>Price</th>
+            <th>Change</th>
+            <th>Volume</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, index) => {
+            const positive = row.change >= 0
+
+            return (
+              <tr key={`${row.symbol}-${row.ts}-${index}`}>
+                <td>{row.ts}</td>
+                <td>{row.symbol}</td>
+                <td>{row.price.toFixed(2)}</td>
+                <td className={positive ? 'positive' : 'negative'}>
+                  {formatSigned(row.change)}
                 </td>
                 <td>{row.volume.toFixed(1)}M</td>
               </tr>

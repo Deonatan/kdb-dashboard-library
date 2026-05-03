@@ -256,14 +256,23 @@ textarea {
   font-family: var(--fx-font-mono);
 }
 
+.stream-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--fx-font-mono);
+}
+
 .movers-table th,
-.movers-table td {
+.movers-table td,
+.stream-table th,
+.stream-table td {
   padding: 10px 8px;
   text-align: left;
   border-bottom: 1px solid var(--fx-grid);
 }
 
-.movers-table th {
+.movers-table th,
+.stream-table th {
   color: var(--fx-muted);
   font-weight: 500;
   text-transform: uppercase;
@@ -271,8 +280,16 @@ textarea {
   font-size: 0.72rem;
 }
 
-.movers-table tbody tr:hover {
+.movers-table tbody tr:hover,
+.stream-table tbody tr:hover {
   background: rgba(255, 255, 255, 0.02);
+}
+
+.movers-table th:nth-child(n + 2),
+.movers-table td:nth-child(n + 2),
+.stream-table th:nth-child(n + 3),
+.stream-table td:nth-child(n + 3) {
+  text-align: right;
 }
 
 .positive {

@@ -79,6 +79,22 @@ export interface DashboardSnapshot {
   volumeSeries: VolumePoint[]
 }
 
+export interface StreamTapeTick {
+  change: number
+  price: number
+  symbol: string
+  ts: string
+  volume: number
+}
+
+export interface StreamTapeSnapshot {
+  channel: string
+  lastUpdated: string
+  sequence: number
+  status: string
+  ticks: StreamTapeTick[]
+}
+
 export const createRequestId = (prefix = 'req') =>
   `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
 
@@ -140,5 +156,20 @@ export const demoSnapshot: DashboardSnapshot = {
     { bucket: '10:45', volume: 2.0 },
     { bucket: '11:00', volume: 1.4 },
     { bucket: '11:15', volume: 1.7 },
+  ],
+}
+
+export const demoStreamTape: StreamTapeSnapshot = {
+  channel: 'stream.tape',
+  lastUpdated: '09:30:11',
+  sequence: 12,
+  status: 'streaming',
+  ticks: [
+    { change: 0.18, price: 194.62, symbol: 'AAPL', ts: '09:30:11', volume: 0.8 },
+    { change: -0.12, price: 421.39, symbol: 'MSFT', ts: '09:30:10', volume: 1.1 },
+    { change: 0.09, price: 957.37, symbol: 'NVDA', ts: '09:30:09', volume: 1.4 },
+    { change: -0.05, price: 401.74, symbol: 'GS', ts: '09:30:08', volume: 0.9 },
+    { change: 0.22, price: 201.39, symbol: 'JPM', ts: '09:30:07', volume: 1.7 },
+    { change: -0.08, price: 525.31, symbol: 'SPY', ts: '09:30:06', volume: 2.2 },
   ],
 }

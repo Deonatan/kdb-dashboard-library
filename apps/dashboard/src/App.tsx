@@ -1,6 +1,7 @@
 import { startTransition, useDeferredValue, useState } from 'react'
 
 import {
+  StreamTapeTable,
   AllocationDonut,
   MetricGrid,
   MoversTable,
@@ -12,10 +13,16 @@ import {
 } from '@kdb-dashboard-library/finance-ui'
 import {
   demoSnapshot,
+  demoStreamTape,
   type DashboardSnapshot,
   type JsonObject,
+  type StreamTapeSnapshot,
 } from '@kdb-dashboard-library/protocol'
-import { useKdbConnection, useKdbLiveQuery } from '@kdb-dashboard-library/react-client'
+import {
+  useKdbConnection,
+  useKdbLiveQuery,
+  useKdbStream,
+} from '@kdb-dashboard-library/react-client'
 
 import './App.css'
 
@@ -45,8 +52,18 @@ function App() {
       fallbackData: demoSnapshot,
     },
   )
+  const streamTape = useKdbStream<StreamTapeSnapshot>(
+    'stream.tape',
+    undefined,
+    {
+      enabled: status === 'open',
+      fallbackData: demoStreamTape,
+      unsubscribeFunc: 'stream.tape.stop',
+    },
+  )
 
   const snapshotData = snapshot.data ?? demoSnapshot
+  const streamData = streamTape.data ?? demoStreamTape
   const latestEnvelope = useDeferredValue(
     latestResponse ? JSON.stringify(latestResponse, null, 2) : '',
   )
@@ -83,6 +100,11 @@ function App() {
       ? 'Live data'
       : 'Fallback'
   const feedTone = snapshot.error
+    ? 'negative'
+    : status === 'open'
+      ? 'positive'
+      : 'warning'
+  const streamTone = streamTape.error
     ? 'negative'
     : status === 'open'
       ? 'positive'
@@ -214,6 +236,14 @@ function App() {
 
               <div className="route-list__item">
                 <div className="route-list__top">
+                  <span className="route-list__func">stream.tape</span>
+                  <span className="route-list__tag">push stream</span>
+                </div>
+                <p>Registers the session for live market-tape updates over the active socket.</p>
+              </div>
+
+              <div className="route-list__item">
+                <div className="route-list__top">
                   <span className="route-list__func">debug.echo</span>
                   <span className="route-list__tag">validation</span>
                 </div>
@@ -230,6 +260,38 @@ function App() {
 
           <Panel eyebrow="trading activity" title="Volume by interval">
             <VolumeBarChart data={snapshotData.volumeSeries} />
+          </Panel>
+        </section>
+
+        <section className="dashboard-grid dashboard-grid--stream">
+          <Panel
+            eyebrow="streaming"
+            title="Live market tape"
+            action={
+              <div className="button-row">
+                <StatusBadge label={streamData.status} tone={streamTone} />
+                <StatusBadge label={`seq ${streamData.sequence}`} tone="accent" />
+              </div>
+            }
+          >
+            <StreamTapeTable rows={streamData.ticks} />
+            <div className="panel-note">
+              <strong>Channel:</strong>
+              {streamData.channel}
+              <span className="panel-note__meta">
+                {streamTape.lastUpdated ?? streamData.lastUpdated}
+              </span>
+            </div>
+          </Panel>
+
+          <Panel eyebrow="transport state" title="Latest response envelope">
+            <pre className="raw-envelope">
+              {latestEnvelope || 'Awaiting the first gateway response.'}
+            </pre>
+            <div className="panel-note">
+              <strong>Feed mode:</strong>
+              {streamTape.error ? streamTape.error : 'Live transport active'}
+            </div>
           </Panel>
         </section>
 
@@ -266,13 +328,27 @@ function App() {
             </pre>
           </Panel>
 
-          <Panel eyebrow="transport" title="Latest response envelope">
-            <pre className="raw-envelope">
-              {latestEnvelope || 'Awaiting the first gateway response.'}
-            </pre>
+          <Panel eyebrow="stream control" title="Live stream status">
+            <div className="route-list">
+              <div className="route-list__item">
+                <div className="route-list__top">
+                  <span className="route-list__func">stream.tape</span>
+                  <span className="route-list__tag">subscribed</span>
+                </div>
+                <p>Sequence {streamData.sequence} with {streamData.ticks.length} retained ticks.</p>
+              </div>
+
+              <div className="route-list__item">
+                <div className="route-list__top">
+                  <span className="route-list__func">stream.tape.stop</span>
+                  <span className="route-list__tag">cleanup</span>
+                </div>
+                <p>Automatically called when the live tape hook is unmounted or the page disconnects.</p>
+              </div>
+            </div>
             <div className="panel-note">
-              <strong>Feed mode:</strong>
-              {snapshot.error ? snapshot.error : 'Live transport active'}
+              <strong>Last update:</strong>
+              {streamTape.lastUpdated ?? streamData.lastUpdated}
             </div>
           </Panel>
         </section>

@@ -83,9 +83,14 @@
 }
 
 .dashboard-grid--charts,
+.dashboard-grid--stream,
 .dashboard-grid--bottom,
 .dashboard-grid--tools {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dashboard-grid--stream {
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
 }
 
 .button-row {
@@ -222,6 +227,7 @@
   .dashboard-strip,
   .dashboard-grid--top,
   .dashboard-grid--charts,
+  .dashboard-grid--stream,
   .dashboard-grid--bottom,
   .dashboard-grid--tools {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -232,6 +238,7 @@
   .dashboard-strip,
   .dashboard-grid--top,
   .dashboard-grid--charts,
+  .dashboard-grid--stream,
   .dashboard-grid--bottom,
   .dashboard-grid--tools {
     grid-template-columns: 1fr;

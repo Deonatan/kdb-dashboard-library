@@ -5,5 +5,6 @@ system "l src/utils/json.q";
 system "l src/core/registry.q";
 system "l src/core/response.q";
 system "l src/core/router.q";
+system "l src/core/stream.q";
 system "l src/core/ws.q";
 system "l src/core/bootstrap.q";

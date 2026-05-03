@@ -1,0 +1,1 @@
+.kdb.registry.register[`stream.tape; {[requestParams] .kdb.stream.subscribeCurrentTape[]}; `name`description`group!("stream.tape"; "Subscribes the active websocket client to a live sample market tape."; "stream")];

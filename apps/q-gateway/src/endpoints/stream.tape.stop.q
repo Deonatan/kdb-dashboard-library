@@ -1,0 +1,1 @@
+.kdb.registry.register[`stream.tape.stop; {[requestParams] .kdb.stream.unsubscribeCurrentTape[]}; `name`description`group!("stream.tape.stop"; "Stops the active websocket client's sample market tape subscription."; "stream")];

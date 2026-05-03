@@ -19,6 +19,7 @@
 .kdb.boot.start:{
   .kdb.registry.clear[];
   loaded:.kdb.boot.loadEndpoints[];
+  .kdb.stream.init[];
   .kdb.ws.install[];
   port:.kdb.boot.listen[];
   0N! .kdb.cfg.serviceName[]," listening on port ",port;

@@ -13,6 +13,14 @@ if[not echo`ok; '"debug.echo smoke test failed"];
 snapshot:.kdb.router.handle "{\"id\":\"smoke-3\",\"func\":\"dashboard.snapshot\"}";
 if[not snapshot`ok; '"dashboard.snapshot smoke test failed"];
 
+stream:.kdb.router.handle "{\"id\":\"smoke-4\",\"func\":\"stream.tape\"}";
+if[not stream`ok; '"stream.tape smoke test failed"];
+
+streamStop:.kdb.router.handle "{\"id\":\"smoke-5\",\"func\":\"stream.tape.stop\"}";
+if[not streamStop`ok; '"stream.tape.stop smoke test failed"];
+
 show health;
 show echo;
 show snapshot;
+show stream;
+show streamStop;

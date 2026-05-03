@@ -1,4 +1,9 @@
 .kdb.ws.clients:`int$();
+.kdb.ws.currentHandle:0Ni;
+
+.kdb.ws.current:{
+  .kdb.ws.currentHandle
+ };
 
 .kdb.ws.onOpen:{[h]
   .kdb.ws.clients,:enlist h;
@@ -8,6 +13,7 @@
 
 .kdb.ws.onClose:{[h]
   .kdb.ws.clients:.kdb.ws.clients except enlist h;
+  .kdb.stream.unsubscribeClient[h];
   0N! "websocket close: ",string h;
   h
  };
@@ -22,7 +28,9 @@
  };
 
 .kdb.ws.onMessage:{[raw]
+  .kdb.ws.currentHandle::.z.w;
   reply:.[.kdb.router.handle; enlist raw; {[err] .kdb.response.fail[""; "transport"; "internal"; err; .kdb.util.emptyDict[]]}];
+  .kdb.ws.currentHandle::0Ni;
   .kdb.ws.send[.z.w; reply]
  };
 
